@@ -1,8 +1,12 @@
+import {
+  ColorSchemeScript,
+  MantineProvider,
+  mantineHtmlProps,
+} from "@mantine/core";
+import mantineCss from "@mantine/core/styles.css?url";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-
-import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -15,13 +19,13 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "Focus Flow",
       },
     ],
     links: [
       {
         rel: "stylesheet",
-        href: appCss,
+        href: mantineCss,
       },
     ],
   }),
@@ -30,12 +34,13 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ja" {...mantineHtmlProps}>
       <head>
         <HeadContent />
+        <ColorSchemeScript />
       </head>
       <body>
-        {children}
+        <MantineProvider>{children}</MantineProvider>
         <TanStackDevtools
           config={{
             position: "bottom-right",

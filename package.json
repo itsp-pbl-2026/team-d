@@ -6,12 +6,10 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "dev": "vite dev --port 3000",
+    "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "format": "biome format",
-    "lint": "biome lint",
     "check": "biome check",
     "deploy": "pnpm run build && wrangler deploy",
     "db:generate": "drizzle-kit generate",
@@ -22,6 +20,8 @@
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.26.0",
+    "@mantine/core": "^9.1.1",
+    "@mantine/hooks": "^9.1.1",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-router": "latest",
@@ -58,8 +58,6 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild",
-      "lightningcss",
       "better-sqlite3"
     ]
   }
