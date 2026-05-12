@@ -4,9 +4,10 @@ import {
   mantineHtmlProps,
 } from "@mantine/core";
 import mantineCss from "@mantine/core/styles.css?url";
-import { TanStackDevtools } from "@tanstack/react-devtools";
+import mantineDatesCss from "@mantine/dates/styles.css?url";
+import mantineScheduleCss from "@mantine/schedule/styles.css?url";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { DashboardLayout } from "../shared/components/Layout/DashboardLayout";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -27,9 +28,18 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: mantineCss,
       },
+      {
+        rel: "stylesheet",
+        href: mantineDatesCss,
+      },
+      {
+        rel: "stylesheet",
+        href: mantineScheduleCss,
+      },
     ],
   }),
   shellComponent: RootDocument,
+  component: () => <DashboardLayout />,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -41,17 +51,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <MantineProvider>{children}</MantineProvider>
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
         <Scripts />
       </body>
     </html>
