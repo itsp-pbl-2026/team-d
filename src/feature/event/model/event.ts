@@ -1,4 +1,4 @@
-class UpcomingEvent {
+export class UpcomingEvent {
   #id: string;
   #title: string;
   #description: string;
