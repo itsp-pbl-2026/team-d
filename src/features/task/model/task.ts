@@ -1,12 +1,10 @@
-import { timeStamp } from "console";
-
-class Task {
+export class Task {
   #id: string;
   #title: string;
   #description: string;
   #deadline: Date;
-  #estimated_minutes: number;
-  #actual_minutes: number;
+  #estimatedMinutes: number;
+  #actualMinutes: number;
   #priority: number;
   #progress: number;
   #status: string;
@@ -16,8 +14,8 @@ class Task {
     title: string,
     description: string,
     deadline: Date,
-    estimated_minutes: number,
-    actual_minutes: number,
+    estimatedMinutes: number,
+    actualMinutes: number,
     priority: number,
     progress: number,
     status: string,
@@ -26,8 +24,8 @@ class Task {
     this.#title = title;
     this.#description = description;
     this.#deadline = deadline;
-    this.#estimated_minutes = estimated_minutes;
-    this.#actual_minutes = actual_minutes;
+    this.#estimatedMinutes = estimatedMinutes;
+    this.#actualMinutes = actualMinutes;
     this.#priority = priority;
     this.#progress = progress;
     this.#status = status;
@@ -50,11 +48,11 @@ class Task {
   }
 
   getEstimatedMinutes(): number {
-    return this.#estimated_minutes;
+    return this.#estimatedMinutes;
   }
 
   getActualMinutes(): number {
-    return this.#actual_minutes;
+    return this.#actualMinutes;
   }
 
   getPriority(): number {
