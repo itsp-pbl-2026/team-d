@@ -1,0 +1,1 @@
+ALTER TABLE `task` ADD `created_at` integer DEFAULT (unixepoch());
