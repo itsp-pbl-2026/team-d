@@ -1,77 +1,71 @@
-import { timeStamp } from "console"
+import { timeStamp } from "console";
 
-class Task{
-    #id : string;
-    #title : string;
-    #description : string;
-    #deadline: Date;
-    #estimated_minutes: number;
-    #actual_minutes: number;
-    #priority: number;
-    #progress: number;
-    #status: string;
+class Task {
+  #id: string;
+  #title: string;
+  #description: string;
+  #deadline: Date;
+  #estimated_minutes: number;
+  #actual_minutes: number;
+  #priority: number;
+  #progress: number;
+  #status: string;
 
-    constructor(
-        id : string,
-        title : string,
-        description : string,
-        deadline: Date,
-        estimated_minutes: number,
-        actual_minutes: number,
-        priority: number,
-        progress: number,
-        status: string,
-    ) {
-        this.#id=id 
-        this.#title = title
-        this.#description = description
-        this.#deadline = deadline
-        this.#estimated_minutes = estimated_minutes
-        this.#actual_minutes = actual_minutes
-        this.#priority = priority
-        this.#progress = progress
-        this.#status = status
+  constructor(
+    id: string,
+    title: string,
+    description: string,
+    deadline: Date,
+    estimated_minutes: number,
+    actual_minutes: number,
+    priority: number,
+    progress: number,
+    status: string,
+  ) {
+    this.#id = id;
+    this.#title = title;
+    this.#description = description;
+    this.#deadline = deadline;
+    this.#estimated_minutes = estimated_minutes;
+    this.#actual_minutes = actual_minutes;
+    this.#priority = priority;
+    this.#progress = progress;
+    this.#status = status;
+  }
 
+  getId(): string {
+    return this.#id;
+  }
 
-        
+  getTitle(): string {
+    return this.#title;
+  }
 
-    }
+  getDescription(): string {
+    return this.#description;
+  }
 
-    
-    getId(): string {
-        return this.#id;
-    }
+  getDeadline(): Date {
+    return this.#deadline;
+  }
 
-    getTitle(): string {
-        return this.#title;
-    }
+  getEstimatedMinutes(): number {
+    return this.#estimated_minutes;
+  }
 
-    getDescription(): string {
-        return this.#description;
-    }
+  getActualMinutes(): number {
+    return this.#actual_minutes;
+  }
 
-    getDeadline(): Date {
-        return this.#deadline;
-    }
+  getPriority(): number {
+    return this.#priority;
+  }
 
-    getEstimatedMinutes(): number {
-        return this.#estimated_minutes;
-    }
+  getProgress(): number {
+    return this.#progress;
+  }
 
-    getActualMinutes(): number {
-        return this.#actual_minutes;
-    }
-
-    getPriority(): number {
-        return this.#priority;
-    }
-
-    getProgress(): number {
-        return this.#progress;
-    }
-
-    getStatus(): string {
-        return this.#status;
-    }
-
+  getStatus(): string {
+    return this.#status;
+  }
 }
