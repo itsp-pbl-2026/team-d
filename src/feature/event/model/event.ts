@@ -2,8 +2,8 @@ export class UpcomingEvent {
   #id: string;
   #title: string;
   #description: string;
-  #start_at: Date;
-  #end_at: Date;
+  #startAt: Date;
+  #endAt: Date;
 
   constructor(
     id: string,
