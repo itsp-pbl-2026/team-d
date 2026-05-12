@@ -5,10 +5,7 @@ import { Home, Calendar as CalendarIcon, CheckSquare, Settings, Bell, Search, Za
 
 const NAV_LINKS = [
   { icon: Home, label: "Home", to: "/" },
-  { icon: CalendarIcon, label: "Schedule", to: "/calendar" },
-  { icon: CheckSquare, label: "Tasks", to: "/tasks" },
-  { icon: Lightbulb, label: "AI Tips", to: "/schedule" },
-  { icon: BarChart2, label: "Progress", to: "/progress" },
+  { icon: CalendarIcon, label: "Schedule", to: "/schedule" },
 ];
 
 export function DashboardLayout() {
@@ -45,41 +42,6 @@ export function DashboardLayout() {
           </Group>
 
           <Group gap="md">
-            <Popover width={320} position="bottom-end" withArrow shadow="md">
-              <Popover.Target>
-                <Indicator color="red" size={8} offset={4} withBorder>
-                  <ActionIcon variant="subtle" color="gray" radius="xl" size="lg">
-                    <Bell size={20} />
-                  </ActionIcon>
-                </Indicator>
-              </Popover.Target>
-              <Popover.Dropdown p="md">
-                <Text fw={600} mb="sm">Notifications</Text>
-                <Stack gap="sm">
-                  <div>
-                    <Text size="sm" fw={500}>AI Schedule Generated</Text>
-                    <Text size="xs" c="dimmed">Your smart schedule for today is ready for review.</Text>
-                  </div>
-                  <Divider />
-                  <div>
-                    <Group justify="space-between" align="flex-start">
-                      <Text size="sm" fw={500}>Upcoming Deadline</Text>
-                      <Text size="xs" c="red" fw={600}>In 2 hrs</Text>
-                    </Group>
-                    <Text size="xs" c="dimmed">Submit Q3 Marketing Report.</Text>
-                  </div>
-                  <Divider />
-                  <div>
-                    <Text size="sm" fw={500}>Daily Goal Met! 🎉</Text>
-                    <Text size="xs" c="dimmed">You completed 4.5 hours of deep focus work.</Text>
-                  </div>
-                </Stack>
-              </Popover.Dropdown>
-            </Popover>
-
-            <ActionIcon variant="subtle" color="gray" radius="xl" size="lg" component={Link} to="/setting">
-              <Settings size={20} />
-            </ActionIcon>
             <Avatar color="indigo" radius="xl" src="https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png" />
           </Group>
         </Group>
@@ -127,17 +89,6 @@ export function DashboardLayout() {
 
         <AppShell.Section>
           <Stack gap="xs" pt="md" pb="xs" style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
-            <NavLink
-              component={Link}
-              to="/help"
-              label={<Text fw={500}>Help Center</Text>}
-              leftSection={<HelpCircle size={20} strokeWidth={currentPath === '/help' ? 2.5 : 2} />}
-              active={currentPath === '/help'}
-              variant="filled"
-              color="indigo.0"
-              c={currentPath === '/help' ? "indigo.9" : "gray.7"}
-              style={{ borderRadius: 8, padding: '10px 12px' }}
-            />
             <NavLink
               label={<Text fw={500}>Logout</Text>}
               leftSection={<LogOut size={20} />}
