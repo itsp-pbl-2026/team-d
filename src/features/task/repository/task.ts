@@ -1,7 +1,7 @@
 import type { Task } from "../model/task";
 
-interface TaskRepository {
-  findbyId(id: string): Promise<Task | null>;
+export interface TaskRepository {
+  findById(id: string): Promise<Task | null>;
   findAll(): Promise<Task[]>;
 
   save(task: Task): Promise<void>;
