@@ -15,8 +15,8 @@ export class UpcomingEvent {
     this.#id = id;
     this.#title = title;
     this.#description = description;
-    this.#start_at = start_at;
-    this.#end_at = end_at;
+    this.#startAt = start_at;
+    this.#endAt = end_at;
   }
   getId(): string {
     return this.#id;
@@ -28,9 +28,9 @@ export class UpcomingEvent {
     return this.#description;
   }
   getStartAt(): Date {
-    return this.#start_at;
+    return this.#startAt;
   }
   getEndAt(): Date {
-    return this.#end_at;
+    return this.#endAt;
   }
 }
