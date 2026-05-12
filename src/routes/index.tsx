@@ -42,7 +42,7 @@ const todayEvents: Event[] = [
   },
 ];
 
-const todayTasks: Task[] = [
+const tasks: Task[] = [
   {
     id: "1",
     title: "Update UI for Dashboard",
@@ -79,10 +79,15 @@ const todayTasks: Task[] = [
 ];
 
 function Home() {
-  const currentTask = todayTasks.find((t) => t.status === "in_progress");
-  const completedTasks = todayTasks.filter((t) => t.status === "done").length;
-  const progressPercent =
-    Math.round((completedTasks / todayTasks.length) * 100) || 0;
+  const currentTask = tasks.find((t) => t.status === "in_progress");
+  const completedTasks = tasks.filter((t) => t.status === "done").length;
+  const inProgressTasks = tasks.filter((t) => t.status === "in_progress").length;
+  const todoTasks = tasks.filter((t) => t.status === "todo").length;
+  const totalTasks = tasks.length;
+  
+  const completedPercent = Math.round((completedTasks / totalTasks) * 100) || 0;
+  const inProgressPercent = Math.round((inProgressTasks / totalTasks) * 100) || 0;
+  const pendingHighPriority = tasks.filter((t) => t.priority === 1 && t.status !== "done").length;
 
   return (
     <Stack gap="lg">
@@ -90,8 +95,7 @@ function Home() {
         <div>
           <Title order={2}>Good morning, Alex.</Title>
           <Text c="dimmed">
-            You have {todayTasks.filter((t) => t.priority === 1).length}{" "}
-            high-priority tasks to tackle today.
+            You have {pendingHighPriority} high-priority tasks pending.
           </Text>
         </div>
         <Button leftSection={<CheckCircle2 size={16} />}>New Task</Button>
@@ -146,71 +150,61 @@ function Home() {
 
         <Grid.Col span={{ base: 12, md: 4 }}>
           <Stack h="100%" gap="md">
-            {/* Task Progress */}
+            {/* Overall Task Progress */}
             <Card shadow="sm" padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">
-                Daily Progress
+                Overall Progress
               </Title>
               <Group justify="center">
                 <RingProgress
                   size={120}
                   thickness={12}
                   roundCaps
-                  sections={[{ value: progressPercent, color: "indigo" }]}
+                  sections={[
+                    { value: completedPercent, color: "indigo", tooltip: `Done (${completedTasks})` },
+                    { value: inProgressPercent, color: "blue.3", tooltip: `In Progress (${inProgressTasks})` }
+                  ]}
                   label={
-                    <Text c="indigo" fw={700} ta="center" size="xl">
-                      {progressPercent}%
+                    <Text c="indigo.9" fw={700} ta="center" size="xl">
+                      {completedPercent}%
                     </Text>
                   }
                 />
               </Group>
               <Text ta="center" c="dimmed" mt="sm">
-                You've completed{" "}
+                Completed{" "}
                 <Text span fw={700} c="dark">
-                  {completedTasks} of {todayTasks.length}
+                  {completedTasks} of {totalTasks}
                 </Text>{" "}
-                tasks today. Keep it up!
+                total tasks.
               </Text>
             </Card>
 
-            {/* Task Plan Status */}
+            {/* Task Breakdown */}
             <Card shadow="sm" padding="lg" radius="md" withBorder>
               <Title order={4} mb="md">
                 Task Status
               </Title>
               <Stack gap="xs">
-                <Group
-                  justify="space-between"
-                  bg="gray.1"
-                  p="xs"
-                  style={{ borderRadius: 8 }}
-                >
+                <Group justify="space-between" bg="gray.0" p="xs" style={{ borderRadius: 8 }}>
                   <Group gap="xs">
-                    <Badge color="indigo" variant="dot">
-                      In Progress
-                    </Badge>
+                    <Badge color="gray" variant="dot">Todo</Badge>
                   </Group>
-                  <Text fw={700} c="indigo">
-                    {
-                      todayTasks.filter((t) => t.status === "in_progress")
-                        .length
-                    }
-                  </Text>
+                  <Text fw={700} c="gray.7">{todoTasks}</Text>
                 </Group>
-                <Group
-                  justify="space-between"
-                  bg="gray.1"
-                  p="xs"
-                  style={{ borderRadius: 8 }}
-                >
+                
+                <Group justify="space-between" bg="blue.0" p="xs" style={{ borderRadius: 8 }}>
                   <Group gap="xs">
-                    <Badge color="red" variant="dot">
-                      High Priority
-                    </Badge>
+                    <Badge color="blue" variant="dot">In Progress</Badge>
                   </Group>
-                  <Text fw={700} c="red">
-                    {todayTasks.filter((t) => t.priority === 1).length}
-                  </Text>
+                  <Text fw={700} c="blue.7">{inProgressTasks}</Text>
+                </Group>
+
+                <Group justify="space-between" bg="indigo.0" p="xs" style={{ borderRadius: 8 }}>
+                  <Group gap="xs">
+                    <Badge color="indigo" variant="dot">Done</Badge>
+                  </Group>
+                  <Text fw={700} c="indigo.7">{completedTasks}</Text>
                 </Group>
               </Stack>
             </Card>
