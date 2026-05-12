@@ -22,4 +22,7 @@ export const task = sqliteTable("task", {
   priority: integer(),
   progress: integer(),
   status: text(),
+  createdAt: integer("created_at", { mode: "timestamp" }).default(
+    sql`(unixepoch())`,
+  ),
 });
