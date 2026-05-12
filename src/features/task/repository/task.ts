@@ -1,10 +1,9 @@
-import {Task} from '../model/task'
+import type { Task } from "../model/task";
 
-interface ITaskRepository{
-    findbyId(id:string): Promise<Task|null>
-    findAll(): Promise<Task[]>
+interface TaskRepository {
+  findbyId(id: string): Promise<Task | null>;
+  findAll(): Promise<Task[]>;
 
-    Save(task:Task): Promise<void>
-    Delete(id:string): Promise<void>
+  save(task: Task): Promise<void>;
+  delete(id: string): Promise<void>;
 }
-
