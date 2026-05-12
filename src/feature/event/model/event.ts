@@ -9,14 +9,14 @@ export class UpcomingEvent {
     id: string,
     title: string,
     description: string,
-    start_at: Date,
-    end_at: Date,
+    startAt: Date,
+    endAt: Date,
   ) {
     this.#id = id;
     this.#title = title;
     this.#description = description;
-    this.#startAt = start_at;
-    this.#endAt = end_at;
+    this.#startAt = startAt;
+    this.#endAt = endAt;
   }
   getId(): string {
     return this.#id;
