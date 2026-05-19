@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { UpcomingEvent } from "./event";
+import { UpcomingEvent } from "./upcomingEvent";
 
 const eventId = "DUMMY";
 
