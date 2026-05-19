@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzleClient } from "../../../db/drizzleClient";
-import { task } from "../../../db/schema";
+import { task as taskTable } from "../../../db/schema";
 import { Task } from "../model/task";
 import type { TaskRepository } from "./task";
 
@@ -8,8 +8,8 @@ export class TaskDrizzleRepository implements TaskRepository {
   async findById(id: string) {
     const result = await drizzleClient
       .select()
-      .from(task)
-      .where(eq(task.id, id));
+      .from(taskTable)
+      .where(eq(taskTable.id, id));
 
     const resultTask = result[0];
 
@@ -27,7 +27,7 @@ export class TaskDrizzleRepository implements TaskRepository {
   }
 
   async findAll() {
-    const allTasksFromTable = await drizzleClient.select().from(task);
+    const allTasksFromTable = await drizzleClient.select().from(taskTable);
 
     const allTasks = allTasksFromTable.map(
       (oneTask) =>
@@ -47,23 +47,37 @@ export class TaskDrizzleRepository implements TaskRepository {
     return allTasks;
   }
 
-  async save(task_: Task) {
-    await drizzleClient.insert(task).values({
-      id: task_.getId(),
-      title: task_.getTitle(),
-      description: task_.getDescription(),
-      deadline: task_.getDeadline(),
-      estimatedMinutes: task_.getEstimatedMinutes(),
-      actualMinutes: task_.getActualMinutes(),
-      priority: task_.getPriority(),
-      progress: task_.getProgress(),
-      status: task_.getStatus(),
-    });
+  async save(task: Task) {
+    await drizzleClient.insert(taskTable).values({
+      id: task.getId(),
+      title: task.getTitle(),
+      description: task.getDescription(),
+      deadline: task.getDeadline(),
+      estimatedMinutes: task.getEstimatedMinutes(),
+      actualMinutes: task.getActualMinutes(),
+      priority: task.getPriority(),
+      progress: task.getProgress(),
+      status: task.getStatus(),
+    }).onConflictDoUpdate({
+        target: taskTable.id,
+        set: {
+            title: task.getTitle(),
+            description: task.getDescription(),
+            deadline: task.getDeadline(),
+            estimatedMinutes: task.getEstimatedMinutes(),
+            actualMinutes: task.getActualMinutes(),
+            priority: task.getPriority(),
+            progress: task.getProgress(),
+            status: task.getStatus(),
+        },
+    }
+    )
+    ;
 
     return;
   }
 
   async delete(id: string): Promise<void> {
-    await drizzleClient.delete(task).where(eq(task.id, id));
+    await drizzleClient.delete(taskTable).where(eq(taskTable.id, id));
   }
 }
