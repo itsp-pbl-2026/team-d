@@ -1,4 +1,4 @@
-import type { UpcomingEvent } from "../model/upcomingEvent";
+import type { UpcomingEvent, UpcomingEventId } from "../model/upcomingEvent";
 import type { UpcomingEventRepository } from "../repository/upcomingEvent";
 
 export class GetUpcomingEventService {
@@ -8,7 +8,7 @@ export class GetUpcomingEventService {
     this.#upcomingEventRepository = upcomingEventRepository;
   }
 
-  async getById(id: string): Promise<UpcomingEvent> {
+  async getById(id: UpcomingEventId): Promise<UpcomingEvent> {
     const event = await this.#upcomingEventRepository.findById(id);
     if (event == null) {
       // TODO: Result型を作る?

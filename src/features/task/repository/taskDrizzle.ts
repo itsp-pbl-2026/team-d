@@ -1,11 +1,11 @@
 import { eq } from "drizzle-orm";
 import { drizzleClient } from "../../../db/drizzleClient";
 import { task as taskTable } from "../../../db/schema";
-import { Task } from "../model/task";
+import { Task, type TaskId } from "../model/task";
 import type { TaskRepository } from "./task";
 
 export class TaskDrizzleRepository implements TaskRepository {
-  async findById(id: string) {
+  async findById(id: TaskId) {
     const resultTask = await drizzleClient.query.task.findFirst({
       where: eq(taskTable.id, id),
     });
@@ -79,7 +79,7 @@ export class TaskDrizzleRepository implements TaskRepository {
     return;
   }
 
-  async delete(id: string) {
+  async delete(id: TaskId) {
     await drizzleClient.delete(taskTable).where(eq(taskTable.id, id));
   }
 }
