@@ -9,24 +9,30 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as Schedule3RouteImport } from './routes/schedule 3'
-import { Route as Schedule2RouteImport } from './routes/schedule 2'
+import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as SettingRouteImport } from './routes/setting'
 import { Route as ScheduleRouteImport } from './routes/schedule'
+import { Route as CalendarRouteImport } from './routes/calendar'
 import { Route as IndexRouteImport } from './routes/index'
 
-const Schedule3Route = Schedule3RouteImport.update({
-  id: '/schedule 3',
-  path: '/schedule 3',
+const TasksRoute = TasksRouteImport.update({
+  id: '/tasks',
+  path: '/tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Schedule2Route = Schedule2RouteImport.update({
-  id: '/schedule 2',
-  path: '/schedule 2',
+const SettingRoute = SettingRouteImport.update({
+  id: '/setting',
+  path: '/setting',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ScheduleRoute = ScheduleRouteImport.update({
   id: '/schedule',
   path: '/schedule',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,52 +43,56 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/schedule': typeof ScheduleRoute
-  '/schedule 2': typeof Schedule2Route
-  '/schedule 3': typeof Schedule3Route
+  '/setting': typeof SettingRoute
+  '/tasks': typeof TasksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/schedule': typeof ScheduleRoute
-  '/schedule 2': typeof Schedule2Route
-  '/schedule 3': typeof Schedule3Route
+  '/setting': typeof SettingRoute
+  '/tasks': typeof TasksRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/calendar': typeof CalendarRoute
   '/schedule': typeof ScheduleRoute
-  '/schedule 2': typeof Schedule2Route
-  '/schedule 3': typeof Schedule3Route
+  '/setting': typeof SettingRoute
+  '/tasks': typeof TasksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/schedule' | '/schedule 2' | '/schedule 3'
+  fullPaths: '/' | '/calendar' | '/schedule' | '/setting' | '/tasks'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/schedule' | '/schedule 2' | '/schedule 3'
-  id: '__root__' | '/' | '/schedule' | '/schedule 2' | '/schedule 3'
+  to: '/' | '/calendar' | '/schedule' | '/setting' | '/tasks'
+  id: '__root__' | '/' | '/calendar' | '/schedule' | '/setting' | '/tasks'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CalendarRoute: typeof CalendarRoute
   ScheduleRoute: typeof ScheduleRoute
-  Schedule2Route: typeof Schedule2Route
-  Schedule3Route: typeof Schedule3Route
+  SettingRoute: typeof SettingRoute
+  TasksRoute: typeof TasksRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/schedule 3': {
-      id: '/schedule 3'
-      path: '/schedule 3'
-      fullPath: '/schedule 3'
-      preLoaderRoute: typeof Schedule3RouteImport
+    '/tasks': {
+      id: '/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof TasksRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/schedule 2': {
-      id: '/schedule 2'
-      path: '/schedule 2'
-      fullPath: '/schedule 2'
-      preLoaderRoute: typeof Schedule2RouteImport
+    '/setting': {
+      id: '/setting'
+      path: '/setting'
+      fullPath: '/setting'
+      preLoaderRoute: typeof SettingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/schedule': {
@@ -90,6 +100,13 @@ declare module '@tanstack/react-router' {
       path: '/schedule'
       fullPath: '/schedule'
       preLoaderRoute: typeof ScheduleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,9 +121,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CalendarRoute: CalendarRoute,
   ScheduleRoute: ScheduleRoute,
-  Schedule2Route: Schedule2Route,
-  Schedule3Route: Schedule3Route,
+  SettingRoute: SettingRoute,
+  TasksRoute: TasksRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
