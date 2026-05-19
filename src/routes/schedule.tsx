@@ -8,7 +8,6 @@ import {
   Modal,
   Stack,
   Text,
-  Textarea,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -72,7 +71,7 @@ const initialEvents: ScheduleEventData[] = [
 ];
 
 function SchedulePage() {
-  const [events, setEvents] = useState<ScheduleEventData[]>(initialEvents);
+  const [events] = useState<ScheduleEventData[]>(initialEvents);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [view, setView] = useState<ScheduleViewLevel>("week");
   const [opened, { open, close }] = useDisclosure(false);

@@ -13,85 +13,86 @@ import {
 } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
-import type { Event, Task } from "../shared/types/models";
+import { UpcomingEvent } from "../feature/event/model/event";
+import { Task } from "../features/task/model/task";
 
 export const Route = createFileRoute("/")({ component: Home });
 
-// Mock Data
-const todayEvents: Event[] = [
-  {
-    id: "1",
-    title: "Daily Standup",
-    description: "Zoom Room A",
-    start_at: "2026-05-12T09:00:00Z",
-    end_at: "2026-05-12T09:30:00Z",
-  },
-  {
-    id: "2",
-    title: "Design System Review",
-    description: "Reviewing component structures",
-    start_at: "2026-05-12T10:30:00Z",
-    end_at: "2026-05-12T11:30:00Z",
-  },
-  {
-    id: "3",
-    title: "Client Discovery Call",
-    description: "New project kickoff",
-    start_at: "2026-05-12T13:00:00Z",
-    end_at: "2026-05-12T14:00:00Z",
-  },
+// Mock Data using backend's Domain Classes
+const todayEvents: UpcomingEvent[] = [
+  new UpcomingEvent(
+    "1",
+    "Daily Standup",
+    "Zoom Room A",
+    new Date("2026-05-12T09:00:00Z"),
+    new Date("2026-05-12T09:30:00Z"),
+  ),
+  new UpcomingEvent(
+    "2",
+    "Design System Review",
+    "Reviewing component structures",
+    new Date("2026-05-12T10:30:00Z"),
+    new Date("2026-05-12T11:30:00Z"),
+  ),
+  new UpcomingEvent(
+    "3",
+    "Client Discovery Call",
+    "New project kickoff",
+    new Date("2026-05-12T13:00:00Z"),
+    new Date("2026-05-12T14:00:00Z"),
+  ),
 ];
 
 const tasks: Task[] = [
-  {
-    id: "1",
-    title: "Update UI for Dashboard",
-    description: "",
-    deadline_at: "2026-05-12T17:00:00Z",
-    estimated_minutes: 120,
-    actual_minutes: 60,
-    priority: 1,
-    progress: 50,
-    status: "in_progress",
-  },
-  {
-    id: "2",
-    title: "Write API Documentation",
-    description: "",
-    deadline_at: "2026-05-12T15:00:00Z",
-    estimated_minutes: 60,
-    actual_minutes: 0,
-    priority: 2,
-    progress: 0,
-    status: "todo",
-  },
-  {
-    id: "3",
-    title: "Fix Login Bug",
-    description: "",
-    deadline_at: "2026-05-12T12:00:00Z",
-    estimated_minutes: 30,
-    actual_minutes: 30,
-    priority: 1,
-    progress: 100,
-    status: "done",
-  },
+  new Task(
+    "1",
+    "Update UI for Dashboard",
+    "",
+    new Date("2026-05-12T17:00:00Z"),
+    120,
+    60,
+    1,
+    50,
+    "in_progress",
+  ),
+  new Task(
+    "2",
+    "Write API Documentation",
+    "",
+    new Date("2026-05-12T15:00:00Z"),
+    60,
+    0,
+    2,
+    0,
+    "todo",
+  ),
+  new Task(
+    "3",
+    "Fix Login Bug",
+    "",
+    new Date("2026-05-12T12:00:00Z"),
+    30,
+    30,
+    1,
+    100,
+    "done",
+  ),
 ];
 
 function Home() {
-  const currentTask = tasks.find((t) => t.status === "in_progress");
-  const completedTasks = tasks.filter((t) => t.status === "done").length;
+  const currentTask = tasks.find((t) => t.getStatus() === "in_progress");
+  const completedTasks = tasks.filter((t) => t.getStatus() === "done").length;
   const inProgressTasks = tasks.filter(
-    (t) => t.status === "in_progress",
+    (t) => t.getStatus() === "in_progress",
   ).length;
-  const todoTasks = tasks.filter((t) => t.status === "todo").length;
+  const todoTasks = tasks.filter((t) => t.getStatus() === "todo").length;
   const totalTasks = tasks.length;
 
   const completedPercent = Math.round((completedTasks / totalTasks) * 100) || 0;
   const inProgressPercent =
     Math.round((inProgressTasks / totalTasks) * 100) || 0;
   const pendingHighPriority = tasks.filter(
-    (t) => t.priority === 1 && t.status !== "done",
+    (t) => t.getPriority() === 1 && t.getStatus() !== "done",
   ).length;
 
   return (
@@ -122,14 +123,14 @@ function Home() {
 
             <Timeline active={1} bulletSize={24} lineWidth={2}>
               {todayEvents.map((event, index) => {
-                const timeStr = new Date(event.start_at).toLocaleTimeString(
-                  [],
-                  { hour: "2-digit", minute: "2-digit" },
-                );
+                const timeStr = event.getStartAt().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
                 return (
                   <Timeline.Item
-                    key={event.id}
-                    title={event.title}
+                    key={event.getId()}
+                    title={event.getTitle()}
                     bullet={
                       <ThemeIcon
                         size={22}
@@ -141,7 +142,7 @@ function Home() {
                     }
                   >
                     <Text c="dimmed" size="sm">
-                      {event.description}
+                      {event.getDescription()}
                     </Text>
                     <Text size="xs" mt={4} fw={500}>
                       {timeStr}
@@ -265,14 +266,14 @@ function Home() {
                   </Title>
                 </Group>
                 <Text fw={600} size="sm">
-                  {currentTask.title}
+                  {currentTask.getTitle()}
                 </Text>
                 <Text size="xs" c="dimmed">
-                  Expected: {currentTask.estimated_minutes} min | Actual:{" "}
-                  {currentTask.actual_minutes} min
+                  Expected: {currentTask.getEstimatedMinutes()} min | Actual:{" "}
+                  {currentTask.getActualMinutes()} min
                 </Text>
                 <Badge mt="sm" color="indigo" variant="light">
-                  {currentTask.progress}% Complete
+                  {currentTask.getProgress()}% Complete
                 </Badge>
               </Card>
             )}
