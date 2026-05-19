@@ -3,12 +3,8 @@ import {
   AppShell,
   Avatar,
   Burger,
-  Divider,
   Group,
-  Indicator,
-  Menu,
   NavLink,
-  Popover,
   Stack,
   Text,
   TextInput,
@@ -17,16 +13,10 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import {
-  BarChart2,
-  Bell,
   Calendar as CalendarIcon,
-  CheckSquare,
-  HelpCircle,
   Home,
-  Lightbulb,
   LogOut,
   Search,
-  Settings,
   Zap,
 } from "lucide-react";
 

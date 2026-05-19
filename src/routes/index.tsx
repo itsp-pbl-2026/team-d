@@ -81,13 +81,18 @@ const tasks: Task[] = [
 function Home() {
   const currentTask = tasks.find((t) => t.status === "in_progress");
   const completedTasks = tasks.filter((t) => t.status === "done").length;
-  const inProgressTasks = tasks.filter((t) => t.status === "in_progress").length;
+  const inProgressTasks = tasks.filter(
+    (t) => t.status === "in_progress",
+  ).length;
   const todoTasks = tasks.filter((t) => t.status === "todo").length;
   const totalTasks = tasks.length;
-  
+
   const completedPercent = Math.round((completedTasks / totalTasks) * 100) || 0;
-  const inProgressPercent = Math.round((inProgressTasks / totalTasks) * 100) || 0;
-  const pendingHighPriority = tasks.filter((t) => t.priority === 1 && t.status !== "done").length;
+  const inProgressPercent =
+    Math.round((inProgressTasks / totalTasks) * 100) || 0;
+  const pendingHighPriority = tasks.filter(
+    (t) => t.priority === 1 && t.status !== "done",
+  ).length;
 
   return (
     <Stack gap="lg">
@@ -161,8 +166,16 @@ function Home() {
                   thickness={12}
                   roundCaps
                   sections={[
-                    { value: completedPercent, color: "indigo", tooltip: `Done (${completedTasks})` },
-                    { value: inProgressPercent, color: "blue.3", tooltip: `In Progress (${inProgressTasks})` }
+                    {
+                      value: completedPercent,
+                      color: "indigo",
+                      tooltip: `Done (${completedTasks})`,
+                    },
+                    {
+                      value: inProgressPercent,
+                      color: "blue.3",
+                      tooltip: `In Progress (${inProgressTasks})`,
+                    },
                   ]}
                   label={
                     <Text c="indigo.9" fw={700} ta="center" size="xl">
@@ -186,25 +199,52 @@ function Home() {
                 Task Status
               </Title>
               <Stack gap="xs">
-                <Group justify="space-between" bg="gray.0" p="xs" style={{ borderRadius: 8 }}>
+                <Group
+                  justify="space-between"
+                  bg="gray.0"
+                  p="xs"
+                  style={{ borderRadius: 8 }}
+                >
                   <Group gap="xs">
-                    <Badge color="gray" variant="dot">Todo</Badge>
+                    <Badge color="gray" variant="dot">
+                      Todo
+                    </Badge>
                   </Group>
-                  <Text fw={700} c="gray.7">{todoTasks}</Text>
-                </Group>
-                
-                <Group justify="space-between" bg="blue.0" p="xs" style={{ borderRadius: 8 }}>
-                  <Group gap="xs">
-                    <Badge color="blue" variant="dot">In Progress</Badge>
-                  </Group>
-                  <Text fw={700} c="blue.7">{inProgressTasks}</Text>
+                  <Text fw={700} c="gray.7">
+                    {todoTasks}
+                  </Text>
                 </Group>
 
-                <Group justify="space-between" bg="indigo.0" p="xs" style={{ borderRadius: 8 }}>
+                <Group
+                  justify="space-between"
+                  bg="blue.0"
+                  p="xs"
+                  style={{ borderRadius: 8 }}
+                >
                   <Group gap="xs">
-                    <Badge color="indigo" variant="dot">Done</Badge>
+                    <Badge color="blue" variant="dot">
+                      In Progress
+                    </Badge>
                   </Group>
-                  <Text fw={700} c="indigo.7">{completedTasks}</Text>
+                  <Text fw={700} c="blue.7">
+                    {inProgressTasks}
+                  </Text>
+                </Group>
+
+                <Group
+                  justify="space-between"
+                  bg="indigo.0"
+                  p="xs"
+                  style={{ borderRadius: 8 }}
+                >
+                  <Group gap="xs">
+                    <Badge color="indigo" variant="dot">
+                      Done
+                    </Badge>
+                  </Group>
+                  <Text fw={700} c="indigo.7">
+                    {completedTasks}
+                  </Text>
                 </Group>
               </Stack>
             </Card>

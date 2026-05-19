@@ -9,21 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as Schedule3RouteImport } from './routes/schedule 3'
-import { Route as Schedule2RouteImport } from './routes/schedule 2'
 import { Route as ScheduleRouteImport } from './routes/schedule'
 import { Route as IndexRouteImport } from './routes/index'
 
-const Schedule3Route = Schedule3RouteImport.update({
-  id: '/schedule 3',
-  path: '/schedule 3',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Schedule2Route = Schedule2RouteImport.update({
-  id: '/schedule 2',
-  path: '/schedule 2',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ScheduleRoute = ScheduleRouteImport.update({
   id: '/schedule',
   path: '/schedule',
@@ -38,53 +26,31 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/schedule': typeof ScheduleRoute
-  '/schedule 2': typeof Schedule2Route
-  '/schedule 3': typeof Schedule3Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/schedule': typeof ScheduleRoute
-  '/schedule 2': typeof Schedule2Route
-  '/schedule 3': typeof Schedule3Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/schedule': typeof ScheduleRoute
-  '/schedule 2': typeof Schedule2Route
-  '/schedule 3': typeof Schedule3Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/schedule' | '/schedule 2' | '/schedule 3'
+  fullPaths: '/' | '/schedule'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/schedule' | '/schedule 2' | '/schedule 3'
-  id: '__root__' | '/' | '/schedule' | '/schedule 2' | '/schedule 3'
+  to: '/' | '/schedule'
+  id: '__root__' | '/' | '/schedule'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ScheduleRoute: typeof ScheduleRoute
-  Schedule2Route: typeof Schedule2Route
-  Schedule3Route: typeof Schedule3Route
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/schedule 3': {
-      id: '/schedule 3'
-      path: '/schedule 3'
-      fullPath: '/schedule 3'
-      preLoaderRoute: typeof Schedule3RouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/schedule 2': {
-      id: '/schedule 2'
-      path: '/schedule 2'
-      fullPath: '/schedule 2'
-      preLoaderRoute: typeof Schedule2RouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/schedule': {
       id: '/schedule'
       path: '/schedule'
@@ -105,8 +71,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ScheduleRoute: ScheduleRoute,
-  Schedule2Route: Schedule2Route,
-  Schedule3Route: Schedule3Route,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
