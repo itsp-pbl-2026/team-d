@@ -13,35 +13,16 @@ import {
 } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
+import { getUpcomingEvents } from "../features/upcomingEvent/api/api";
 import { Task } from "../features/task/model/task";
-import { UpcomingEvent } from "../features/upcomingEvent/model/upcomingEvent";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({
+  loader: () => getUpcomingEvents(),
+  component: Home,
+});
 
 // Mock Data using backend's Domain Classes
-const todayEvents: UpcomingEvent[] = [
-  new UpcomingEvent(
-    "1",
-    "Daily Standup",
-    "Zoom Room A",
-    new Date("2026-05-12T09:00:00Z"),
-    new Date("2026-05-12T09:30:00Z"),
-  ),
-  new UpcomingEvent(
-    "2",
-    "Design System Review",
-    "Reviewing component structures",
-    new Date("2026-05-12T10:30:00Z"),
-    new Date("2026-05-12T11:30:00Z"),
-  ),
-  new UpcomingEvent(
-    "3",
-    "Client Discovery Call",
-    "New project kickoff",
-    new Date("2026-05-12T13:00:00Z"),
-    new Date("2026-05-12T14:00:00Z"),
-  ),
-];
+
 
 const tasks: Task[] = [
   new Task(
@@ -80,6 +61,15 @@ const tasks: Task[] = [
 ];
 
 function Home() {
+  const events = Route.useLoaderData();
+
+  const todayEvents = events.filter((event) => {
+    const eventDate = new Date(event.startAt);
+    const today = new Date();
+
+    return eventDate.toDateString() === today.toDateString();
+  });
+
   const currentTask = tasks.find((t) => t.getStatus() === "in_progress");
   const completedTasks = tasks.filter((t) => t.getStatus() === "done").length;
   const inProgressTasks = tasks.filter(
@@ -123,14 +113,14 @@ function Home() {
 
             <Timeline active={1} bulletSize={24} lineWidth={2}>
               {todayEvents.map((event, index) => {
-                const timeStr = event.getStartAt().toLocaleTimeString([], {
+                const timeStr = new Date(event.startAt).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
                 });
                 return (
                   <Timeline.Item
-                    key={event.getId()}
-                    title={event.getTitle()}
+                    key={event.id}
+                    title={event.title}
                     bullet={
                       <ThemeIcon
                         size={22}
@@ -142,7 +132,7 @@ function Home() {
                     }
                   >
                     <Text c="dimmed" size="sm">
-                      {event.getDescription()}
+                      {event.description}
                     </Text>
                     <Text size="xs" mt={4} fw={500}>
                       {timeStr}
