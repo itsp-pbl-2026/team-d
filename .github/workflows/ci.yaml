@@ -20,3 +20,5 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Check code
         run: pnpm run ci
+      - name: Test
+        run: pnpm run test
