@@ -7,6 +7,8 @@ import mantineCss from "@mantine/core/styles.css?url";
 import mantineDatesCss from "@mantine/dates/styles.css?url";
 import mantineScheduleCss from "@mantine/schedule/styles.css?url";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { DashboardLayout } from "../shared/components/Layout/DashboardLayout";
 
 export const Route = createRootRoute({
@@ -39,7 +41,13 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
-  component: () => <DashboardLayout />,
+  component: () => (
+    <>
+      <DashboardLayout />
+      <TanStackDevtools />
+      <TanStackRouterDevtoolsPanel />
+    </>
+  ),
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
