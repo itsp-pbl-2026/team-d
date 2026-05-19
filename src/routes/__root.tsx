@@ -6,8 +6,8 @@ import {
 import mantineCss from "@mantine/core/styles.css?url";
 import mantineDatesCss from "@mantine/dates/styles.css?url";
 import mantineScheduleCss from "@mantine/schedule/styles.css?url";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { DashboardLayout } from "../shared/components/Layout/DashboardLayout";
 
