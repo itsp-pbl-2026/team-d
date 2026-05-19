@@ -1,8 +1,10 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import type { TaskId } from "#/features/task/model/task";
+import type { UpcomingEventId } from "#/features/upcomingEvent/model/upcomingEvent";
 
 export const event = sqliteTable("event", {
-  id: text().primaryKey(),
+  id: text().$type<UpcomingEventId>().primaryKey(),
   title: text().notNull(),
   description: text(),
   startAt: integer("start_at", { mode: "timestamp" }).notNull(),
@@ -13,7 +15,7 @@ export const event = sqliteTable("event", {
 });
 
 export const task = sqliteTable("task", {
-  id: text().primaryKey(),
+  id: text().$type<TaskId>().primaryKey(),
   title: text().notNull(),
   description: text(),
   deadline: integer({ mode: "timestamp" }).notNull(),
