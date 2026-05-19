@@ -1,5 +1,5 @@
 import type { Task } from "../model/task";
-import type { TaskRepository } from "../repository/task"
+import type { TaskRepository } from "../repository/task";
 
 export class CreateTaskService {
   #taskRepository: TaskRepository;
@@ -12,5 +12,4 @@ export class CreateTaskService {
     await this.#taskRepository.save(task);
     return;
   }
-
 }
