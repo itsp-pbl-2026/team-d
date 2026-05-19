@@ -3,7 +3,14 @@ import { Task } from "./task";
 
 const taskId = "DUMMY";
 
-const createTask = (overrides?: { deadline?: Date; estimatedMinutes?: number; actualMinutes?: number; priority?: number; progress?: number; status?: string }) =>
+const createTask = (overrides?: {
+  deadline?: Date;
+  estimatedMinutes?: number;
+  actualMinutes?: number;
+  priority?: number;
+  progress?: number;
+  status?: string;
+}) =>
   new Task(
     taskId,
     "タイトル",
@@ -30,7 +37,14 @@ describe("Task", () => {
     const priority = 1;
     const progress = 66;
     const status = "そこそこ";
-    const task = createTask({ deadline, estimatedMinutes, actualMinutes, priority, progress, status });
+    const task = createTask({
+      deadline,
+      estimatedMinutes,
+      actualMinutes,
+      priority,
+      progress,
+      status,
+    });
 
     expect(task.getId()).toBe(taskId);
     expect(task.getTitle()).toBe("タイトル");
