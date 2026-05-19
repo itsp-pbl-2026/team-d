@@ -175,7 +175,9 @@ function SchedulePage() {
             <Card shadow="sm" padding="md" radius="md" withBorder>
               <DatePicker
                 value={selectedDate}
-                onChange={setSelectedDate}
+                onChange={(val) =>
+                  setSelectedDate(val ? new Date(val as Date | string) : null)
+                }
                 size="sm"
                 styles={{ calendarHeader: { marginBottom: 10 } }}
               />
@@ -267,7 +269,12 @@ function SchedulePage() {
                         border: "1px solid var(--mantine-color-gray-3)",
                       }}
                     >
-                      <Text size="xs" fw={600} c="gray.6" letterSpacing={1}>
+                      <Text
+                        size="xs"
+                        fw={600}
+                        c="gray.6"
+                        style={{ letterSpacing: 1 }}
+                      >
                         {event.title}
                       </Text>
                     </Box>

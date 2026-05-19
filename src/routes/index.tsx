@@ -13,8 +13,8 @@ import {
 } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
-import { UpcomingEvent } from "../feature/event/model/event";
 import { Task } from "../features/task/model/task";
+import { UpcomingEvent } from "../features/upcomingEvent/model/upcomingEvent";
 
 export const Route = createFileRoute("/")({ component: Home });
 
