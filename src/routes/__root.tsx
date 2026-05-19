@@ -41,13 +41,7 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
-  component: () => (
-    <>
-      <DashboardLayout />
-      <TanStackDevtools />
-      <TanStackRouterDevtoolsPanel />
-    </>
-  ),
+  component: () => <DashboardLayout />,
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -59,6 +53,17 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <MantineProvider>{children}</MantineProvider>
+        <TanStackDevtools
+          config={{
+            position: "bottom-right",
+          }}
+          plugins={[
+            {
+              name: "Tanstack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
         <Scripts />
       </body>
     </html>
