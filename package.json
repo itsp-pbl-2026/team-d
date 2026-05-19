@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "check": "biome check --write",
-    "ci": "biome ci",
+    "ci": "tsc && biome ci",
     "deploy": "pnpm run build && wrangler deploy",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
