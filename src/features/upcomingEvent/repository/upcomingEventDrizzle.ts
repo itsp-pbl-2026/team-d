@@ -1,12 +1,10 @@
 import { eq } from "drizzle-orm";
-
 import { drizzleClient } from "../../../db/drizzleClient";
 import { event as eventTable } from "../../../db/schema";
-
 import { UpcomingEvent } from "../model/upcomingEvent";
 import type { UpcomingEventRepository } from "./upcomingEvent";
 
-export class DrizzleUpcomingEventRepository
+export class UpcomingEventDrizzleRepository
   implements UpcomingEventRepository
 {
   async save(event: UpcomingEvent): Promise<void> {
