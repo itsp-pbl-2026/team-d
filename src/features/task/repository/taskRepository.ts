@@ -48,31 +48,32 @@ export class TaskDrizzleRepository implements TaskRepository {
   }
 
   async save(task: Task) {
-    await drizzleClient.insert(taskTable).values({
-      id: task.getId(),
-      title: task.getTitle(),
-      description: task.getDescription(),
-      deadline: task.getDeadline(),
-      estimatedMinutes: task.getEstimatedMinutes(),
-      actualMinutes: task.getActualMinutes(),
-      priority: task.getPriority(),
-      progress: task.getProgress(),
-      status: task.getStatus(),
-    }).onConflictDoUpdate({
+    await drizzleClient
+      .insert(taskTable)
+      .values({
+        id: task.getId(),
+        title: task.getTitle(),
+        description: task.getDescription(),
+        deadline: task.getDeadline(),
+        estimatedMinutes: task.getEstimatedMinutes(),
+        actualMinutes: task.getActualMinutes(),
+        priority: task.getPriority(),
+        progress: task.getProgress(),
+        status: task.getStatus(),
+      })
+      .onConflictDoUpdate({
         target: taskTable.id,
         set: {
-            title: task.getTitle(),
-            description: task.getDescription(),
-            deadline: task.getDeadline(),
-            estimatedMinutes: task.getEstimatedMinutes(),
-            actualMinutes: task.getActualMinutes(),
-            priority: task.getPriority(),
-            progress: task.getProgress(),
-            status: task.getStatus(),
+          title: task.getTitle(),
+          description: task.getDescription(),
+          deadline: task.getDeadline(),
+          estimatedMinutes: task.getEstimatedMinutes(),
+          actualMinutes: task.getActualMinutes(),
+          priority: task.getPriority(),
+          progress: task.getProgress(),
+          status: task.getStatus(),
         },
-    }
-    )
-    ;
+      });
 
     return;
   }
