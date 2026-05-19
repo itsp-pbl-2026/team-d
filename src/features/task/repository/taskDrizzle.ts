@@ -6,12 +6,14 @@ import type { TaskRepository } from "./task";
 
 export class TaskDrizzleRepository implements TaskRepository {
   async findById(id: string) {
-    const result = await drizzleClient
-      .select()
-      .from(taskTable)
-      .where(eq(taskTable.id, id));
+    const resultTask = await drizzleClient.query.task.findFirst(
+      {where: eq(taskTable.id, id)}
+    )
+    
+    if(!resultTask){
+      return undefined;
+    }
 
-    const resultTask = result[0];
 
     return new Task(
       resultTask.id,
@@ -27,7 +29,7 @@ export class TaskDrizzleRepository implements TaskRepository {
   }
 
   async findAll() {
-    const allTasksFromTable = await drizzleClient.select().from(taskTable);
+    const allTasksFromTable = await drizzleClient.query.task.findMany()
 
     const allTasks = allTasksFromTable.map(
       (oneTask) =>
@@ -78,7 +80,7 @@ export class TaskDrizzleRepository implements TaskRepository {
     return;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string){
     await drizzleClient.delete(taskTable).where(eq(taskTable.id, id));
   }
 }
