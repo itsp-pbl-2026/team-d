@@ -4,9 +4,7 @@ import { event as eventTable } from "../../../db/schema";
 import { UpcomingEvent } from "../model/upcomingEvent";
 import type { UpcomingEventRepository } from "./upcomingEvent";
 
-export class UpcomingEventDrizzleRepository
-  implements UpcomingEventRepository
-{
+export class UpcomingEventDrizzleRepository implements UpcomingEventRepository {
   async save(event: UpcomingEvent): Promise<void> {
     await drizzleClient
       .insert(eventTable)
@@ -40,7 +38,7 @@ export class UpcomingEventDrizzleRepository
     return new UpcomingEvent(
       row.id,
       row.title,
-      row.description??"",
+      row.description ?? "",
       row.startAt,
       row.endAt,
     );
@@ -54,7 +52,7 @@ export class UpcomingEventDrizzleRepository
         new UpcomingEvent(
           row.id,
           row.title,
-          row.description??"",
+          row.description ?? "",
           row.startAt,
           row.endAt,
         ),
