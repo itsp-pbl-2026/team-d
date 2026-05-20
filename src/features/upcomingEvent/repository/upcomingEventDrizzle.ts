@@ -1,12 +1,18 @@
 import { eq } from "drizzle-orm";
-import { drizzleClient } from "../../../db/drizzleClient";
+import type { DrizzleClient } from "../../../db/drizzleClient";
 import { event as eventTable } from "../../../db/schema";
 import { UpcomingEvent } from "../model/upcomingEvent";
 import type { UpcomingEventRepository } from "./upcomingEvent";
 
 export class UpcomingEventDrizzleRepository implements UpcomingEventRepository {
+  #db: DrizzleClient;
+
+  constructor(db: DrizzleClient) {
+    this.#db = db;
+  }
+
   async save(event: UpcomingEvent): Promise<void> {
-    await drizzleClient
+    await this.#db
       .insert(eventTable)
       .values({
         id: event.getId(),
@@ -27,7 +33,7 @@ export class UpcomingEventDrizzleRepository implements UpcomingEventRepository {
   }
 
   async findById(id: string): Promise<UpcomingEvent | undefined> {
-    const row = await drizzleClient.query.event.findFirst({
+    const row = await this.#db.query.event.findFirst({
       where: eq(eventTable.id, id),
     });
 
@@ -45,7 +51,7 @@ export class UpcomingEventDrizzleRepository implements UpcomingEventRepository {
   }
 
   async findAll(): Promise<UpcomingEvent[]> {
-    const rows = await drizzleClient.query.event.findMany();
+    const rows = await this.#db.query.event.findMany();
 
     return rows.map(
       (row) =>
@@ -60,6 +66,6 @@ export class UpcomingEventDrizzleRepository implements UpcomingEventRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await drizzleClient.delete(eventTable).where(eq(eventTable.id, id));
+    await this.#db.delete(eventTable).where(eq(eventTable.id, id));
   }
 }
