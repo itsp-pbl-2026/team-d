@@ -4,5 +4,10 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   test: {
     environment: "node",
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts"],
+      exclude: ["*.d.ts", "*.gen.ts"]
+    }
   },
 });
