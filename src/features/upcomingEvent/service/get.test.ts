@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { IdGenerator } from "#/features/id";
 import { UpcomingEvent } from "../model/upcomingEvent";
 import type { UpcomingEventRepository } from "../repository/upcomingEvent";
 import { GetUpcomingEventService } from "./get";
@@ -10,7 +11,8 @@ const mockedUpcomingEventRepository = {
   delete: vi.fn(),
 } satisfies UpcomingEventRepository;
 
-const eventId = "DUMMY";
+const testIdGenerator = new IdGenerator();
+const eventId = testIdGenerator.generate<UpcomingEvent>();
 const createUpcomingEvent = () =>
   new UpcomingEvent(eventId, "タイトル", "説明", new Date(), new Date());
 

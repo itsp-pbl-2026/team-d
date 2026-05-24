@@ -1,8 +1,8 @@
-import type { UpcomingEvent } from "../model/upcomingEvent";
+import type { UpcomingEvent, UpcomingEventId } from "../model/upcomingEvent";
 
 export interface UpcomingEventRepository {
   save(event: UpcomingEvent): Promise<void>;
-  findById(id: string): Promise<UpcomingEvent | undefined>;
+  findById(id: UpcomingEventId): Promise<UpcomingEvent | undefined>;
   findAll(): Promise<UpcomingEvent[]>;
-  delete(id: string): Promise<void>;
+  delete(id: UpcomingEventId): Promise<void>;
 }

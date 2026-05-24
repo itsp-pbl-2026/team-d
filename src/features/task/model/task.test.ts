@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { IdGenerator } from "#/features/id";
 import { Task } from "./task";
 
-const taskId = "DUMMY";
+const testIdGenerator = new IdGenerator();
+const taskId = testIdGenerator.generate<Task>();
 
 const createTask = (overrides?: {
   deadline?: Date;
