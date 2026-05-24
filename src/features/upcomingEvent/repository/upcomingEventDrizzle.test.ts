@@ -7,10 +7,12 @@ import {
   schema,
 } from "#/db/drizzleClient";
 import { event } from "#/db/schema";
-import { UpcomingEvent } from "../model/upcomingEvent";
+import { IdGenerator } from "#/features/id";
+import { UpcomingEvent, type UpcomingEventId } from "../model/upcomingEvent";
 import { UpcomingEventDrizzleRepository } from "./upcomingEventDrizzle";
 
-const eventId = "DUMMY";
+const testIdGenerator = new IdGenerator();
+const eventId = testIdGenerator.generate<UpcomingEvent>();
 const createUpcomingEvent = (overrides?: {
   title?: string;
   description?: string;
@@ -78,7 +80,7 @@ describe("UpcomingEventDrizzleRepository", () => {
 
     it("存在しないidではundefinedになる", async ({ db }) => {
       const repository = new UpcomingEventDrizzleRepository(db);
-      const event = await repository.findById("");
+      const event = await repository.findById("" as UpcomingEventId);
 
       expect(event).toBeUndefined();
     });
@@ -171,7 +173,9 @@ describe("UpcomingEventDrizzleRepository", () => {
     it("存在しないidでもエラーにならない", async ({ db }) => {
       const repository = new UpcomingEventDrizzleRepository(db);
 
-      await expect(repository.delete("")).resolves.toBe(undefined);
+      await expect(repository.delete("" as UpcomingEventId)).resolves.toBe(
+        undefined,
+      );
     });
   });
 });
