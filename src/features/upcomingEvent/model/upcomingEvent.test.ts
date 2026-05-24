@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { IdGenerator } from "#/features/id";
 import { UpcomingEvent } from "./upcomingEvent";
 
-const eventId = "DUMMY";
+const testIdGenerator = new IdGenerator();
+const eventId = testIdGenerator.generate<UpcomingEvent>();
 
 const createUpcomingEvent = (overrides?: { startAt?: Date; endAt?: Date }) =>
   new UpcomingEvent(
