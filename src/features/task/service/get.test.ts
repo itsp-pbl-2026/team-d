@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { IdGenerator } from "#/features/id";
 import { Task } from "../model/task";
 import type { TaskRepository } from "../repository/task";
 import { GetTaskService } from "./get";
@@ -10,7 +11,9 @@ const mockedTaskRepository = {
   delete: vi.fn(),
 } satisfies TaskRepository;
 
-const taskId = "DUMMY";
+const testIdGenerator = new IdGenerator();
+const taskId = testIdGenerator.generate<Task>();
+
 const createTask = () =>
   new Task(taskId, "タイトル", "説明", new Date(), 0, 0, 0, 0, "");
 
@@ -47,7 +50,7 @@ describe("GetTaskService", () => {
   describe("getAll", () => {
     it("タスクを取得できる", async () => {
       const service = new GetTaskService(mockedTaskRepository);
-      const tasks = [...new Array(10)].map(createTask); // UpcomingTaskを10個生成
+      const tasks = [...new Array(10)].map(createTask); // Taskを10個生成
       mockedTaskRepository.findAll.mockResolvedValue(tasks);
 
       const tasksActual = await service.getAll();

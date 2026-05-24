@@ -1,4 +1,4 @@
-import type { Task } from "../model/task";
+import type { Task, TaskId } from "../model/task";
 import type { TaskRepository } from "../repository/task";
 
 export class GetTaskService {
@@ -8,7 +8,7 @@ export class GetTaskService {
     this.#taskRepository = taskRepository;
   }
 
-  async getById(id: string): Promise<Task> {
+  async getById(id: TaskId): Promise<Task> {
     const task = await this.#taskRepository.findById(id);
     if (task == null) {
       // TODO: Result型を作る?
