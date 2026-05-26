@@ -1,18 +1,27 @@
 import {
   Badge,
+  Box,
   Button,
   Card,
   Grid,
   Group,
+  Modal,
+  NumberInput,
+  Rating,
   RingProgress,
   Stack,
   Text,
+  TextInput,
+  Textarea,
   ThemeIcon,
   Timeline,
   Title,
 } from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
+import { useDisclosure } from "@mantine/hooks";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
+import { useState } from "react";
 import { Task } from "../features/task/model/task";
 import { UpcomingEvent } from "../features/upcomingEvent/model/upcomingEvent";
 
@@ -80,6 +89,63 @@ const tasks: Task[] = [
 ];
 
 function Home() {
+  const [opened, { open, close }] = useDisclosure(false);
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    deadline: null as Date | null,
+    estimatedMinutes: 60,
+    priority: 0,
+  });
+  const [errors, setErrors] = useState({
+    title: "",
+    deadline: "",
+  });
+
+  const handleClose = () => {
+    close();
+    setErrors({ title: "", deadline: "" });
+  };
+
+  const handleCreateTask = () => {
+    let hasError = false;
+    const newErrors = { title: "", deadline: "" };
+
+    // 必須項目のチェック
+    if (!formData.title.trim()) {
+      newErrors.title = "Task Title is required";
+      hasError = true;
+    }
+    if (!formData.deadline) {
+      newErrors.deadline = "Deadline is required";
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) return;
+
+    // Taskモデルに合わせて新しいタスクのインスタンスを生成
+    const newTask = new Task(
+      crypto.randomUUID(), // IDは仮でUUIDを生成
+      formData.title,
+      formData.description,
+      formData.deadline!,
+      formData.estimatedMinutes,
+      0, // actualMinutesの初期値
+      formData.priority,
+      0, // progressの初期値
+      "todo" // statusの初期値
+    );
+
+    console.log("Mock Create Task: ", newTask);
+    // TODO: ここでバックエンドのAPIやサーバー関数を呼び出してnewTaskを保存する
+    // 例: await saveTaskServerFn(newTask);
+
+    handleClose();
+    setFormData({ title: "", description: "", deadline: null, estimatedMinutes: 60, priority: 0 });
+  };
+
   const currentTask = tasks.find((t) => t.getStatus() === "in_progress");
   const completedTasks = tasks.filter((t) => t.getStatus() === "done").length;
   const inProgressTasks = tasks.filter(
@@ -104,7 +170,7 @@ function Home() {
             You have {pendingHighPriority} high-priority tasks pending.
           </Text>
         </div>
-        <Button leftSection={<CheckCircle2 size={16} />}>New Task</Button>
+        <Button leftSection={<CheckCircle2 size={16} />} onClick={open}>New Task</Button>
       </Group>
 
       <Grid>
@@ -280,6 +346,76 @@ function Home() {
           </Stack>
         </Grid.Col>
       </Grid>
+
+      <Modal 
+        opened={opened} 
+        onClose={handleClose} 
+        withCloseButton={false}
+        size="lg"
+        radius="md"
+        padding={0}
+      >
+        <Stack gap={0}>
+          <Box p="lg" pb="sm">
+            <Title order={3}>Create New Task</Title>
+            <Text c="dimmed" size="sm" mt={4}>
+              Fill in the details to add a new task to your flow.
+            </Text>
+          </Box>
+          <Box p="lg" pt={0}>
+            <Stack gap="md">
+              <TextInput 
+                label="Task Title" 
+                placeholder="e.g., Finalize Q4 Budget" 
+                required 
+                value={formData.title} 
+                onChange={(e) => setFormData({ ...formData, title: e.currentTarget.value })} 
+                error={errors.title}
+              />
+              <Textarea 
+                label="Description" 
+                placeholder="Add more details about this task..." 
+                minRows={3} 
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.currentTarget.value })}
+              />
+              <Group grow align="flex-start">
+                <DateTimePicker 
+                  label="Deadline" 
+                  placeholder="mm/dd/yyyy, --:--" 
+                  required 
+                  value={formData.deadline}
+                  onChange={(val) => setFormData({ ...formData, deadline: val ? new Date(val) : null })}
+                  error={errors.deadline}
+                />
+                <NumberInput 
+                  label="Est. Minutes" 
+                  defaultValue={60} 
+                  min={0} 
+                  required 
+                  value={formData.estimatedMinutes}
+                  onChange={(val) => setFormData({ ...formData, estimatedMinutes: Number(val) || 0 })}
+                />
+              </Group>
+              <Box>
+                <Text size="sm" fw={500} mb={4}>Priority Level</Text>
+                <Rating 
+                  size="lg" 
+                  defaultValue={0} 
+                  count={5} 
+                  value={formData.priority}
+                  onChange={(val) => setFormData({ ...formData, priority: val })}
+                />
+                <Text size="xs" c="dimmed" mt={4}>Select from 1 to 5 stars</Text>
+              </Box>
+            </Stack>
+          </Box>
+          <Group justify="flex-end" p="md" bg="gray.0" style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
+            <Button variant="subtle" color="gray" onClick={handleClose}>Cancel</Button>
+            <Button color="indigo.9" onClick={handleCreateTask}>Create Task</Button>
+          </Group>
+        </Stack>
+      </Modal>
     </Stack>
   );
 }
