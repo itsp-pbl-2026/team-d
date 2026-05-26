@@ -14,7 +14,6 @@ const service = new GetUpcomingEventService(repository);
 
 export const getUpcomingEvents = createServerFn({ method: "GET" }).handler(
   async (): Promise<UpcomingEventListItem[]> => {
-
     const events = await service.getAll();
 
     return events.map((event) => ({

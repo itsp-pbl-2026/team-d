@@ -13,8 +13,8 @@ import {
 } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
-import { getUpcomingEvents } from "../features/upcomingEvent/api/api";
 import { Task } from "../features/task/model/task";
+import { getUpcomingEvents } from "../features/upcomingEvent/api/api";
 
 export const Route = createFileRoute("/")({
   loader: () => getUpcomingEvents(),
@@ -22,7 +22,6 @@ export const Route = createFileRoute("/")({
 });
 
 // Mock Data using backend's Domain Classes
-
 
 const tasks: Task[] = [
   new Task(
