@@ -19,32 +19,39 @@ import {
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
 import { useState } from "react";
-import { Task } from "../features/task/model/task";
-import { UpcomingEvent } from "../features/upcomingEvent/model/upcomingEvent";
+import { Task, type TaskId } from "#/features/task/model/task";
+import {
+  UpcomingEvent,
+  type UpcomingEventId,
+} from "#/features/upcomingEvent/model/upcomingEvent";
+import { getTasksFn, createTaskFn } from "./service";
 
-export const Route = createFileRoute("/")({ component: Home });
+export const Route = createFileRoute("/")({ 
+  component: Home,
+  loader: async () => await getTasksFn(),
+});
 
 // Mock Data using backend's Domain Classes
 const todayEvents: UpcomingEvent[] = [
   new UpcomingEvent(
-    "1",
+    "1" as UpcomingEventId,
     "Daily Standup",
     "Zoom Room A",
     new Date("2026-05-12T09:00:00Z"),
     new Date("2026-05-12T09:30:00Z"),
   ),
   new UpcomingEvent(
-    "2",
+    "2" as UpcomingEventId,
     "Design System Review",
     "Reviewing component structures",
     new Date("2026-05-12T10:30:00Z"),
     new Date("2026-05-12T11:30:00Z"),
   ),
   new UpcomingEvent(
-    "3",
+    "3" as UpcomingEventId,
     "Client Discovery Call",
     "New project kickoff",
     new Date("2026-05-12T13:00:00Z"),
@@ -52,43 +59,21 @@ const todayEvents: UpcomingEvent[] = [
   ),
 ];
 
-const tasks: Task[] = [
-  new Task(
-    "1",
-    "Update UI for Dashboard",
-    "",
-    new Date("2026-05-12T17:00:00Z"),
-    120,
-    60,
-    1,
-    50,
-    "in_progress",
-  ),
-  new Task(
-    "2",
-    "Write API Documentation",
-    "",
-    new Date("2026-05-12T15:00:00Z"),
-    60,
-    0,
-    2,
-    0,
-    "todo",
-  ),
-  new Task(
-    "3",
-    "Fix Login Bug",
-    "",
-    new Date("2026-05-12T12:00:00Z"),
-    30,
-    30,
-    1,
-    100,
-    "done",
-  ),
-];
-
 function Home() {
+  const router = useRouter();
+  const rawTasks = Route.useLoaderData();
+  const tasks = rawTasks.map(t => new Task(
+    t.id as TaskId,
+    t.title,
+    t.description,
+    new Date(t.deadline),
+    t.estimatedMinutes,
+    t.actualMinutes,
+    t.priority,
+    t.progress,
+    t.status
+  ));
+
   const [opened, { open, close }] = useDisclosure(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -107,7 +92,7 @@ function Home() {
     setErrors({ title: "", deadline: "" });
   };
 
-  const handleCreateTask = () => {
+  const handleCreateTask = async () => {
     let hasError = false;
     const newErrors = { title: "", deadline: "" };
 
@@ -125,25 +110,23 @@ function Home() {
 
     if (hasError) return;
 
-    // Taskモデルに合わせて新しいタスクのインスタンスを生成
-    const newTask = new Task(
-      crypto.randomUUID(), // IDは仮でUUIDを生成
-      formData.title,
-      formData.description,
-      formData.deadline!,
-      formData.estimatedMinutes,
-      0, // actualMinutesの初期値
-      formData.priority,
-      0, // progressの初期値
-      "todo" // statusの初期値
-    );
-
-    console.log("Mock Create Task: ", newTask);
-    // TODO: ここでバックエンドのAPIやサーバー関数を呼び出してnewTaskを保存する
-    // 例: await saveTaskServerFn(newTask);
-
-    handleClose();
-    setFormData({ title: "", description: "", deadline: null, estimatedMinutes: 60, priority: 0 });
+    try {
+      await createTaskFn({
+        data: {
+          title: formData.title,
+          description: formData.description,
+          deadline: formData.deadline!.toISOString(),
+          estimatedMinutes: formData.estimatedMinutes,
+          priority: formData.priority,
+        }
+      });
+      
+      router.invalidate();
+      handleClose();
+      setFormData({ title: "", description: "", deadline: null, estimatedMinutes: 60, priority: 0 });
+    } catch (error) {
+      console.error("Failed to create task", error);
+    }
   };
 
   const currentTask = tasks.find((t) => t.getStatus() === "in_progress");
