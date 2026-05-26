@@ -1,12 +1,16 @@
+import type { Id } from "#/features/id";
+
+export type UpcomingEventId = Id<UpcomingEvent>;
+
 export class UpcomingEvent {
-  #id: string;
+  #id: UpcomingEventId;
   #title: string;
   #description: string;
   #startAt: Date;
   #endAt: Date;
 
   constructor(
-    id: string,
+    id: UpcomingEventId,
     title: string,
     description: string,
     startAt: Date,
@@ -18,7 +22,7 @@ export class UpcomingEvent {
     this.#startAt = startAt;
     this.#endAt = endAt;
   }
-  getId(): string {
+  getId(): UpcomingEventId {
     return this.#id;
   }
   getTitle(): string {

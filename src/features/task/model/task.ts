@@ -1,5 +1,9 @@
+import type { Id } from "#/features/id";
+
+export type TaskId = Id<Task>;
+
 export class Task {
-  #id: string;
+  #id: TaskId;
   #title: string;
   #description: string;
   #deadline: Date;
@@ -10,7 +14,7 @@ export class Task {
   #status: string;
 
   constructor(
-    id: string,
+    id: TaskId,
     title: string,
     description: string,
     deadline: Date,
@@ -31,7 +35,7 @@ export class Task {
     this.#status = status;
   }
 
-  getId(): string {
+  getId(): TaskId {
     return this.#id;
   }
 

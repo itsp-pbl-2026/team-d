@@ -13,29 +13,32 @@ import {
 } from "@mantine/core";
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
-import { Task } from "../features/task/model/task";
-import { UpcomingEvent } from "../features/upcomingEvent/model/upcomingEvent";
+import { Task, type TaskId } from "#/features/task/model/task";
+import {
+  UpcomingEvent,
+  type UpcomingEventId,
+} from "#/features/upcomingEvent/model/upcomingEvent";
 
 export const Route = createFileRoute("/")({ component: Home });
 
 // Mock Data using backend's Domain Classes
 const todayEvents: UpcomingEvent[] = [
   new UpcomingEvent(
-    "1",
+    "1" as UpcomingEventId,
     "Daily Standup",
     "Zoom Room A",
     new Date("2026-05-12T09:00:00Z"),
     new Date("2026-05-12T09:30:00Z"),
   ),
   new UpcomingEvent(
-    "2",
+    "2" as UpcomingEventId,
     "Design System Review",
     "Reviewing component structures",
     new Date("2026-05-12T10:30:00Z"),
     new Date("2026-05-12T11:30:00Z"),
   ),
   new UpcomingEvent(
-    "3",
+    "3" as UpcomingEventId,
     "Client Discovery Call",
     "New project kickoff",
     new Date("2026-05-12T13:00:00Z"),
@@ -45,7 +48,7 @@ const todayEvents: UpcomingEvent[] = [
 
 const tasks: Task[] = [
   new Task(
-    "1",
+    "1" as TaskId,
     "Update UI for Dashboard",
     "",
     new Date("2026-05-12T17:00:00Z"),
@@ -56,7 +59,7 @@ const tasks: Task[] = [
     "in_progress",
   ),
   new Task(
-    "2",
+    "2" as TaskId,
     "Write API Documentation",
     "",
     new Date("2026-05-12T15:00:00Z"),
@@ -67,7 +70,7 @@ const tasks: Task[] = [
     "todo",
   ),
   new Task(
-    "3",
+    "3" as TaskId,
     "Fix Login Bug",
     "",
     new Date("2026-05-12T12:00:00Z"),
