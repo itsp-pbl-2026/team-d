@@ -426,12 +426,13 @@ function Home() {
                 placeholder="e.g., Finalize Q4 Budget"
                 required
                 value={taskFormData.title}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const val = e.currentTarget.value;
                   setTaskFormData((prev) => ({
                     ...prev,
-                    title: e.currentTarget.value,
-                  }))
-                }
+                    title: val,
+                  }));
+                }}
                 error={taskErrors.title}
               />
               <Textarea
@@ -439,12 +440,13 @@ function Home() {
                 placeholder="Add more details about this task..."
                 minRows={3}
                 value={taskFormData.description}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const val = e.currentTarget.value;
                   setTaskFormData((prev) => ({
                     ...prev,
-                    description: e.currentTarget.value,
-                  }))
-                }
+                    description: val,
+                  }));
+                }}
               />
               <Group grow align="flex-start">
                 <DateTimePicker
@@ -529,12 +531,13 @@ function Home() {
             placeholder="Project Sync or Deep Work Session"
             required
             value={eventFormData.title}
-            onChange={(e) =>
+            onChange={(e) => {
+              const val = e.currentTarget.value;
               setEventFormData((prev) => ({
                 ...prev,
-                title: e.currentTarget.value,
-              }))
-            }
+                title: val,
+              }));
+            }}
             error={eventErrors.title}
           />
           <Textarea
@@ -542,12 +545,13 @@ function Home() {
             placeholder="Briefly describe the agenda or goals..."
             minRows={3}
             value={eventFormData.description}
-            onChange={(e) =>
+            onChange={(e) => {
+              const val = e.currentTarget.value;
               setEventFormData((prev) => ({
                 ...prev,
-                description: e.currentTarget.value,
-              }))
-            }
+                description: val,
+              }));
+            }}
           />
           <DateTimePicker
             type="range"
