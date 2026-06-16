@@ -14,10 +14,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
 import { Task, type TaskId } from "#/features/task/model/task";
-import {
-  getUpcomingEvents,
-} from "#/features/upcomingEvent/api/api";
-import { UpcomingEvent, type UpcomingEventId } from "#/features/upcomingEvent/model/upcomingEvent";
+import { getUpcomingEvents } from "#/features/upcomingEvent/api/api";
 
 export const Route = createFileRoute("/")({
   loader: () => getUpcomingEvents(),
@@ -25,29 +22,6 @@ export const Route = createFileRoute("/")({
 });
 
 // Mock Data using backend's Domain Classes
-const todayEvents: UpcomingEvent[] = [
-  new UpcomingEvent(
-    "1" as UpcomingEventId,
-    "Daily Standup",
-    "Zoom Room A",
-    new Date("2026-05-12T09:00:00Z"),
-    new Date("2026-05-12T09:30:00Z"),
-  ),
-  new UpcomingEvent(
-    "2" as UpcomingEventId,
-    "Design System Review",
-    "Reviewing component structures",
-    new Date("2026-05-12T10:30:00Z"),
-    new Date("2026-05-12T11:30:00Z"),
-  ),
-  new UpcomingEvent(
-    "3" as UpcomingEventId,
-    "Client Discovery Call",
-    "New project kickoff",
-    new Date("2026-05-12T13:00:00Z"),
-    new Date("2026-05-12T14:00:00Z"),
-  ),
-];
 
 const tasks: Task[] = [
   new Task(
