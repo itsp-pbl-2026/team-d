@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { drizzleClient } from "#/db/drizzleClient";
 import type { Task } from "../model/task";
 import { TaskDrizzleRepository } from "../repository/taskDrizzle";
 import { CreateTaskService } from "../service/create";
@@ -16,7 +17,7 @@ export type TaskListItem = {
   status: string;
 };
 
-const repo = new TaskDrizzleRepository();
+const repo = new TaskDrizzleRepository(drizzleClient);
 const getService = new GetTaskService(repo);
 const createService = new CreateTaskService(repo);
 
