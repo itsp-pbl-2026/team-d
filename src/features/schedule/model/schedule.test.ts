@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { IdGenerator } from "#/features/id";
-import { Task } from "../../task/model/task";
+import { Task } from "#/features/task/model/task";
 import { Schedule } from "./schedule";
 
 const testIdGenerator = new IdGenerator();

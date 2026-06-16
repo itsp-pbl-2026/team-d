@@ -1,12 +1,18 @@
 import { eq } from "drizzle-orm";
-import { drizzleClient } from "../../../db/drizzleClient";
-import { task as taskTable } from "../../../db/schema";
+import type { DrizzleClient } from "#/db/drizzleClient";
+import { task as taskTable } from "#/db/schema";
 import { Task, type TaskId } from "../model/task";
 import type { TaskRepository } from "./task";
 
 export class TaskDrizzleRepository implements TaskRepository {
+  #db: DrizzleClient;
+
+  constructor(db: DrizzleClient) {
+    this.#db = db;
+  }
+
   async findById(id: TaskId) {
-    const resultTask = await drizzleClient.query.task.findFirst({
+    const resultTask = await this.#db.query.task.findFirst({
       where: eq(taskTable.id, id),
     });
 
@@ -28,7 +34,7 @@ export class TaskDrizzleRepository implements TaskRepository {
   }
 
   async findAll() {
-    const allTasksFromTable = await drizzleClient.query.task.findMany();
+    const allTasksFromTable = await this.#db.query.task.findMany();
 
     const allTasks = allTasksFromTable.map(
       (oneTask) =>
@@ -49,7 +55,7 @@ export class TaskDrizzleRepository implements TaskRepository {
   }
 
   async save(task: Task) {
-    await drizzleClient
+    await this.#db
       .insert(taskTable)
       .values({
         id: task.getId(),
@@ -80,6 +86,6 @@ export class TaskDrizzleRepository implements TaskRepository {
   }
 
   async delete(id: TaskId) {
-    await drizzleClient.delete(taskTable).where(eq(taskTable.id, id));
+    await this.#db.delete(taskTable).where(eq(taskTable.id, id));
   }
 }
