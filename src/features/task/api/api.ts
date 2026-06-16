@@ -17,9 +17,9 @@ export type TaskListItem = {
   status: string;
 };
 
-const repo = new TaskDrizzleRepository(drizzleClient);
-const getService = new GetTaskService(repo);
-const createService = new CreateTaskService(repo);
+const repository = new TaskDrizzleRepository(drizzleClient);
+const getService = new GetTaskService(repository);
+const createService = new CreateTaskService(repository);
 
 const serializeTask = (task: Task): TaskListItem => ({
   id: task.getId(),
