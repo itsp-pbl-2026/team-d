@@ -1,8 +1,21 @@
+import { createFileRoute } from '@tanstack/react-router'
 import { createServerFn } from "@tanstack/react-start";
 import { TaskDrizzleRepository } from "../features/task/repository/taskDrizzle";
 import { CreateTaskService } from "../features/task/service/create";
 import { GetTaskService } from "../features/task/service/get";
+import { UpcomingEventDrizzleRepository } from "../features/upcomingEvent/repository/upcomingEventDrizzle";
+import { CreateUpcomingEventService } from "../features/upcomingEvent/service/create";
+import { GetUpcomingEventService } from "../features/upcomingEvent/service/get";
+import type { UpcomingEvent } from "../features/upcomingEvent/model/upcomingEvent";
 import { Task } from "../features/task/model/task";
+
+export const Route = createFileRoute('/service')({
+  component: RouteComponent,
+})
+
+function RouteComponent() {
+  return <div>Hello "/service"!</div>
+}
 
 const serializeTask = (task: Task) => ({
   id: task.getId(),
@@ -44,4 +57,40 @@ export const createTaskFn = createServerFn({ method: "POST" })
       data.priority
     );
     return serializeTask(task);
+  });
+
+export const serializeEvent = (event: UpcomingEvent) => ({
+  id: event.getId(),
+  title: event.getTitle(),
+  description: event.getDescription(),
+  startAt: event.getStartAt().toISOString(),
+  endAt: event.getEndAt().toISOString(),
+});
+
+export const getUpcomingEventsFn = createServerFn({ method: "GET" })
+  .handler(async () => {
+    const repo = new UpcomingEventDrizzleRepository();
+    const service = new GetUpcomingEventService(repo);
+    const events = await service.getAll();
+    return events.map(serializeEvent);
+  });
+
+export const createUpcomingEventFn = createServerFn({ method: "POST" })
+  .inputValidator((data: {
+    title: string;
+    description: string;
+    startAt: string;
+    endAt: string;
+  }) => data)
+  .handler(async ({ data }) => {
+    const repo = new UpcomingEventDrizzleRepository();
+    const service = new CreateUpcomingEventService(repo);
+
+    const event = await service.handle(
+      data.title,
+      data.description,
+      new Date(data.startAt),
+      new Date(data.endAt)
+    );
+    return serializeEvent(event);
   });
