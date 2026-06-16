@@ -1,4 +1,5 @@
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
+import type { SQLiteInsertValue } from "drizzle-orm/sqlite-core";
 import { seed } from "drizzle-seed";
 import { assert, describe, expect, test } from "vitest";
 import {
@@ -26,13 +27,10 @@ const createUpcomingEvent = (overrides?: {
     overrides?.startAt ?? new Date(),
     overrides?.endAt ?? new Date(),
   );
-const insertEvent = (db: DrizzleClient) =>
-  db.insert(event).values({
-    id: eventId,
-    title: "",
-    startAt: new Date(),
-    endAt: new Date(),
-  });
+const insertEvent = (
+  db: DrizzleClient,
+  value: SQLiteInsertValue<typeof event>,
+) => db.insert(event).values(value);
 
 const it = test.extend<{
   db: DrizzleClient;
@@ -67,7 +65,14 @@ describe("UpcomingEventDrizzleRepository", () => {
 
   describe("findById", () => {
     it("データを取得できる", async ({ db }) => {
-      await insertEvent(db);
+      const startAt = new Date("2026-06-16");
+      const endAt = new Date("2026-06-17");
+      await insertEvent(db, {
+        id: eventId,
+        title: "title",
+        startAt,
+        endAt,
+      });
 
       const repository = new UpcomingEventDrizzleRepository(db);
       const event = await repository.findById(eventId);
@@ -76,6 +81,10 @@ describe("UpcomingEventDrizzleRepository", () => {
       assert(event != null);
 
       expect(event.getId()).toBe(eventId);
+      expect(event.getTitle()).toBe("title");
+      expect(event.getDescription()).toBe("");
+      expect(event.getStartAt()).toEqual(startAt);
+      expect(event.getEndAt()).toEqual(endAt);
     });
 
     it("存在しないidではundefinedになる", async ({ db }) => {
@@ -160,7 +169,12 @@ describe("UpcomingEventDrizzleRepository", () => {
 
   describe("delete", () => {
     it("データを削除できる", async ({ db }) => {
-      await insertEvent(db);
+      await insertEvent(db, {
+        id: eventId,
+        title: "",
+        startAt: new Date(),
+        endAt: new Date(),
+      });
 
       const repository = new UpcomingEventDrizzleRepository(db);
       await repository.delete(eventId);
