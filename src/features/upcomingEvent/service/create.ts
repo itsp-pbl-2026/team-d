@@ -1,12 +1,17 @@
-import { idGenerator } from "../../../features/id";
+import type { IdGenerator } from "#/features/id";
 import { UpcomingEvent } from "../model/upcomingEvent";
 import type { UpcomingEventRepository } from "../repository/upcomingEvent";
 
 export class CreateUpcomingEventService {
+  #idGenerator: IdGenerator;
   #upcomingEventRepository: UpcomingEventRepository;
 
-  constructor(upcomingEventRepository: UpcomingEventRepository) {
+  constructor(
+    idGenerator: IdGenerator,
+    upcomingEventRepository: UpcomingEventRepository,
+  ) {
     this.#upcomingEventRepository = upcomingEventRepository;
+    this.#idGenerator = idGenerator;
   }
 
   async handle(
@@ -15,15 +20,15 @@ export class CreateUpcomingEventService {
     startAt: Date,
     endAt: Date,
   ): Promise<UpcomingEvent> {
-    const eventId = idGenerator.generate<UpcomingEvent>();
-    const event = new UpcomingEvent(
-      eventId,
+    const id = this.#idGenerator.generate<UpcomingEvent>();
+    const upcomingEvent = new UpcomingEvent(
+      id,
       title,
       description,
       startAt,
       endAt,
     );
-    await this.#upcomingEventRepository.save(event);
-    return event;
+    await this.#upcomingEventRepository.save(upcomingEvent);
+    return upcomingEvent;
   }
 }

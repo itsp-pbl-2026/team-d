@@ -8,6 +8,7 @@ import { CreateUpcomingEventService } from "../features/upcomingEvent/service/cr
 import { GetUpcomingEventService } from "../features/upcomingEvent/service/get";
 import type { UpcomingEvent } from "../features/upcomingEvent/model/upcomingEvent";
 import { Task } from "../features/task/model/task";
+import { idGenerator } from "../features/id";
 
 export const Route = createFileRoute('/service')({
   component: RouteComponent,
@@ -84,7 +85,7 @@ export const createUpcomingEventFn = createServerFn({ method: "POST" })
   }) => data)
   .handler(async ({ data }) => {
     const repo = new UpcomingEventDrizzleRepository();
-    const service = new CreateUpcomingEventService(repo);
+    const service = new CreateUpcomingEventService(idGenerator, repo);
 
     const event = await service.handle(
       data.title,
