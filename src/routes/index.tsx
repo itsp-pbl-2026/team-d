@@ -23,24 +23,23 @@ import { useDisclosure } from "@mantine/hooks";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
 import { useState } from "react";
+import { createTask, getTasks } from "#/features/task/api/api";
 import { Task, type TaskId } from "#/features/task/model/task";
+import {
+  createUpcomingEvent,
+  getUpcomingEvents,
+} from "#/features/upcomingEvent/api/api";
 import {
   UpcomingEvent,
   type UpcomingEventId,
 } from "#/features/upcomingEvent/model/upcomingEvent";
-import {
-  createTaskFn,
-  createUpcomingEventFn,
-  getTasksFn,
-  getUpcomingEventsFn,
-} from "./service";
 
 export const Route = createFileRoute("/")({
   component: Home,
   loader: async () => {
     const [tasks, events] = await Promise.all([
-      getTasksFn(),
-      getUpcomingEventsFn(),
+      getTasks(),
+      getUpcomingEvents(),
     ]);
     return { tasks, events };
   },
@@ -132,7 +131,7 @@ function Home() {
     if (hasError) return;
 
     try {
-      await createTaskFn({
+      await createTask({
         data: {
           title: taskFormData.title,
           description: taskFormData.description,
@@ -191,7 +190,7 @@ function Home() {
     if (hasError) return;
 
     try {
-      await createUpcomingEventFn({
+      await createUpcomingEvent({
         data: {
           title: eventFormData.title,
           description: eventFormData.description,
