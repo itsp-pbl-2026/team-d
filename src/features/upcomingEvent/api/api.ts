@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { drizzleClient } from "#/db/drizzleClient";
 import { idGenerator } from "#/features/id";
 import { UpcomingEventDrizzleRepository } from "../repository/upcomingEventDrizzle";
 import { CreateUpcomingEventService } from "../service/create";
@@ -12,7 +13,7 @@ export type UpcomingEventListItem = {
   endAt: string;
 };
 
-const repository = new UpcomingEventDrizzleRepository();
+const repository = new UpcomingEventDrizzleRepository(drizzleClient);
 const getService = new GetUpcomingEventService(repository);
 const createService = new CreateUpcomingEventService(idGenerator, repository);
 

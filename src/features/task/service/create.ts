@@ -1,4 +1,4 @@
-import { idGenerator } from "../../../features/id";
+import { idGenerator } from "#/features/id";
 import { Task } from "../model/task";
 import type { TaskRepository } from "../repository/task";
 
