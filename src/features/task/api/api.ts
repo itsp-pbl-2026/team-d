@@ -16,6 +16,10 @@ export type TaskListItem = {
   status: string;
 };
 
+const repo = new TaskDrizzleRepository();
+const getService = new GetTaskService(repo);
+const createService = new CreateTaskService(repo);
+
 const serializeTask = (task: Task): TaskListItem => ({
   id: task.getId(),
   title: task.getTitle(),
@@ -30,9 +34,7 @@ const serializeTask = (task: Task): TaskListItem => ({
 
 export const getTasks = createServerFn({ method: "GET" }).handler(
   async (): Promise<TaskListItem[]> => {
-    const repo = new TaskDrizzleRepository();
-    const service = new GetTaskService(repo);
-    const tasks = await service.getAll();
+    const tasks = await getService.getAll();
     return tasks.map(serializeTask);
   },
 );
@@ -48,10 +50,7 @@ export const createTask = createServerFn({ method: "POST" })
     }) => data,
   )
   .handler(async ({ data }): Promise<TaskListItem> => {
-    const repo = new TaskDrizzleRepository();
-    const service = new CreateTaskService(repo);
-
-    const task = await service.handle(
+    const task = await createService.handle(
       data.title,
       data.description,
       new Date(data.deadline),

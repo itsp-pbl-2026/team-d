@@ -14,6 +14,7 @@ export type UpcomingEventListItem = {
 
 const repository = new UpcomingEventDrizzleRepository();
 const getService = new GetUpcomingEventService(repository);
+const createService = new CreateUpcomingEventService(idGenerator, repository);
 
 export const getUpcomingEvents = createServerFn({ method: "GET" }).handler(
   async (): Promise<UpcomingEventListItem[]> => {
@@ -39,11 +40,6 @@ export const createUpcomingEvent = createServerFn({ method: "POST" })
     }) => data,
   )
   .handler(async ({ data }): Promise<UpcomingEventListItem> => {
-    const createService = new CreateUpcomingEventService(
-      idGenerator,
-      repository,
-    );
-
     const event = await createService.handle(
       data.title,
       data.description,
