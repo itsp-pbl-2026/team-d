@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import type { DrizzleClient } from "#/db/drizzleClient";
-import { task as taskTable } from "../../../db/schema";
+import { task as taskTable } from "#/db/schema";
 import { Task, type TaskId } from "../model/task";
 import type { TaskRepository } from "./task";
 

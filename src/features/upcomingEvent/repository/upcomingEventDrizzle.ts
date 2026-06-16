@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import type { DrizzleClient } from "../../../db/drizzleClient";
-import { event as eventTable } from "../../../db/schema";
+import type { DrizzleClient } from "#/db/drizzleClient";
+import { event as eventTable } from "#/db/schema";
 import { UpcomingEvent, type UpcomingEventId } from "../model/upcomingEvent";
 import type { UpcomingEventRepository } from "./upcomingEvent";
 
