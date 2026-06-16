@@ -53,10 +53,8 @@ const createSchedule = (overrides?: {
     overrides?.task ?? createTask(),
   );
 
-const insertTask = (
-  db: DrizzleClient,
-  value: SQLiteInsertValue<typeof task>,
-) => db.insert(task).values(value);
+const insertTask = (db: DrizzleClient, value: SQLiteInsertValue<typeof task>) =>
+  db.insert(task).values(value);
 
 const insertSchedule = (
   db: DrizzleClient,
@@ -76,10 +74,7 @@ const insertTaskFromModel = (db: DrizzleClient, taskModel: Task) =>
     status: taskModel.getStatus(),
   });
 
-const insertScheduleFromModel = (
-  db: DrizzleClient,
-  scheduleModel: Schedule,
-) =>
+const insertScheduleFromModel = (db: DrizzleClient, scheduleModel: Schedule) =>
   insertSchedule(db, {
     id: scheduleModel.getId(),
     title: scheduleModel.getTitle(),
