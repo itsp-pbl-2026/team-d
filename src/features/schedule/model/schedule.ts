@@ -1,5 +1,5 @@
 import type { Id } from "#/features/id";
-import type { Task } from "../../task/model/task";
+import type { Task } from "#/features/task/model/task";
 
 export type ScheduleId = Id<Schedule>;
 export class Schedule {
