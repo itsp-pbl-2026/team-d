@@ -12,8 +12,8 @@ import {
   RingProgress,
   Stack,
   Text,
-  TextInput,
   Textarea,
+  TextInput,
   ThemeIcon,
   Timeline,
   Title,
@@ -28,14 +28,19 @@ import {
   UpcomingEvent,
   type UpcomingEventId,
 } from "#/features/upcomingEvent/model/upcomingEvent";
-import { getTasksFn, createTaskFn, getUpcomingEventsFn, createUpcomingEventFn } from "./service";
+import {
+  createTaskFn,
+  createUpcomingEventFn,
+  getTasksFn,
+  getUpcomingEventsFn,
+} from "./service";
 
-export const Route = createFileRoute("/")({ 
+export const Route = createFileRoute("/")({
   component: Home,
   loader: async () => {
     const [tasks, events] = await Promise.all([
       getTasksFn(),
-      getUpcomingEventsFn()
+      getUpcomingEventsFn(),
     ]);
     return { tasks, events };
   },
@@ -44,30 +49,39 @@ export const Route = createFileRoute("/")({
 function Home() {
   const router = useRouter();
   const { tasks: rawTasks, events: rawEvents } = Route.useLoaderData();
-  
-  const tasks = rawTasks.map(t => new Task(
-    t.id as TaskId,
-    t.title,
-    t.description,
-    new Date(t.deadline),
-    t.estimatedMinutes,
-    t.actualMinutes,
-    t.priority,
-    t.progress,
-    t.status
-  ));
 
-  const events = rawEvents.map(e => new UpcomingEvent(
-    e.id as UpcomingEventId,
-    e.title,
-    e.description,
-    new Date(e.startAt),
-    new Date(e.endAt)
-  ));
+  const tasks = rawTasks.map(
+    (t) =>
+      new Task(
+        t.id as TaskId,
+        t.title,
+        t.description,
+        new Date(t.deadline),
+        t.estimatedMinutes,
+        t.actualMinutes,
+        t.priority,
+        t.progress,
+        t.status,
+      ),
+  );
 
-  const [taskOpened, { open: openTask, close: closeTask }] = useDisclosure(false);
-  const [eventOpened, { open: openEvent, close: closeEvent }] = useDisclosure(false);
-  const [calendarOpened, { open: openCalendar, close: closeCalendar }] = useDisclosure(false);
+  const events = rawEvents.map(
+    (e) =>
+      new UpcomingEvent(
+        e.id as UpcomingEventId,
+        e.title,
+        e.description,
+        new Date(e.startAt),
+        new Date(e.endAt),
+      ),
+  );
+
+  const [taskOpened, { open: openTask, close: closeTask }] =
+    useDisclosure(false);
+  const [eventOpened, { open: openEvent, close: closeEvent }] =
+    useDisclosure(false);
+  const [calendarOpened, { open: openCalendar, close: closeCalendar }] =
+    useDisclosure(false);
 
   // Form states
   const [taskFormData, setTaskFormData] = useState({
@@ -85,9 +99,15 @@ function Home() {
     startAt: null as Date | null,
     endAt: null as Date | null,
   });
-  const [eventErrors, setEventErrors] = useState({ title: "", startAt: "", endAt: "" });
+  const [eventErrors, setEventErrors] = useState({
+    title: "",
+    startAt: "",
+    endAt: "",
+  });
 
-  const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date>(new Date());
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<Date>(
+    new Date(),
+  );
 
   // Task Handlers
   const handleTaskClose = () => {
@@ -116,15 +136,21 @@ function Home() {
         data: {
           title: taskFormData.title,
           description: taskFormData.description,
-          deadline: taskFormData.deadline!.toISOString(),
+          deadline: taskFormData.deadline?.toISOString() ?? "",
           estimatedMinutes: taskFormData.estimatedMinutes,
           priority: taskFormData.priority,
-        }
+        },
       });
-      
+
       router.invalidate();
       handleTaskClose();
-      setTaskFormData({ title: "", description: "", deadline: null, estimatedMinutes: 60, priority: 0 });
+      setTaskFormData({
+        title: "",
+        description: "",
+        deadline: null,
+        estimatedMinutes: 60,
+        priority: 0,
+      });
     } catch (error) {
       console.error("Failed to create task", error);
     }
@@ -152,7 +178,11 @@ function Home() {
       newErrors.endAt = "End Time is required";
       hasError = true;
     }
-    if (eventFormData.startAt && eventFormData.endAt && eventFormData.startAt >= eventFormData.endAt) {
+    if (
+      eventFormData.startAt &&
+      eventFormData.endAt &&
+      eventFormData.startAt >= eventFormData.endAt
+    ) {
       newErrors.endAt = "End Time must be after Start Time";
       hasError = true;
     }
@@ -165,14 +195,19 @@ function Home() {
         data: {
           title: eventFormData.title,
           description: eventFormData.description,
-          startAt: eventFormData.startAt!.toISOString(),
-          endAt: eventFormData.endAt!.toISOString(),
-        }
+          startAt: eventFormData.startAt?.toISOString() ?? "",
+          endAt: eventFormData.endAt?.toISOString() ?? "",
+        },
       });
-      
+
       router.invalidate();
       handleEventClose();
-      setEventFormData({ title: "", description: "", startAt: null, endAt: null });
+      setEventFormData({
+        title: "",
+        description: "",
+        startAt: null,
+        endAt: null,
+      });
     } catch (error) {
       console.error("Failed to create event", error);
     }
@@ -181,21 +216,26 @@ function Home() {
   // Compute Task Metrics
   const currentTask = tasks.find((t) => t.getStatus() === "in_progress");
   const completedTasks = tasks.filter((t) => t.getStatus() === "done").length;
-  const inProgressTasks = tasks.filter((t) => t.getStatus() === "in_progress").length;
+  const inProgressTasks = tasks.filter(
+    (t) => t.getStatus() === "in_progress",
+  ).length;
   const todoTasks = tasks.filter((t) => t.getStatus() === "pending").length;
   const totalTasks = tasks.length;
 
   const completedPercent = Math.round((completedTasks / totalTasks) * 100) || 0;
-  const inProgressPercent = Math.round((inProgressTasks / totalTasks) * 100) || 0;
+  const inProgressPercent =
+    Math.round((inProgressTasks / totalTasks) * 100) || 0;
   const pendingHighPriority = tasks.filter(
     (t) => t.getPriority() === 1 && t.getStatus() !== "done",
   ).length;
 
   // Filter Today's Events
   const today = new Date();
-  const getStartOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const getEndOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
-  
+  const getStartOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const getEndOfDay = (d: Date) =>
+    new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
+
   const todayStart = getStartOfDay(today);
   const todayEnd = getEndOfDay(today);
 
@@ -207,7 +247,10 @@ function Home() {
   const selectedDayStart = getStartOfDay(selectedCalendarDate);
   const selectedDayEnd = getEndOfDay(selectedCalendarDate);
   const selectedDayEvents = events
-    .filter((e) => e.getStartAt() >= selectedDayStart && e.getStartAt() <= selectedDayEnd)
+    .filter(
+      (e) =>
+        e.getStartAt() >= selectedDayStart && e.getStartAt() <= selectedDayEnd,
+    )
     .sort((a, b) => a.getStartAt().getTime() - b.getStartAt().getTime());
 
   return (
@@ -220,10 +263,19 @@ function Home() {
           </Text>
         </div>
         <Group>
-          <Button variant="outline" color="indigo" leftSection={<Calendar size={16} />} onClick={openEvent}>
+          <Button
+            variant="outline"
+            color="indigo"
+            leftSection={<Calendar size={16} />}
+            onClick={openEvent}
+          >
             New Event
           </Button>
-          <Button color="indigo" leftSection={<CheckCircle2 size={16} />} onClick={openTask}>
+          <Button
+            color="indigo"
+            leftSection={<CheckCircle2 size={16} />}
+            onClick={openTask}
+          >
             New Task
           </Button>
         </Group>
@@ -244,7 +296,9 @@ function Home() {
             </Group>
 
             {todaysEvents.length === 0 ? (
-              <Text c="dimmed" fs="italic">No events scheduled for today.</Text>
+              <Text c="dimmed" fs="italic">
+                No events scheduled for today.
+              </Text>
             ) : (
               <Timeline active={1} bulletSize={24} lineWidth={2}>
                 {todaysEvents.map((event, index) => {
@@ -408,9 +462,9 @@ function Home() {
       </Grid>
 
       {/* -------------------- New Task Modal -------------------- */}
-      <Modal 
-        opened={taskOpened} 
-        onClose={handleTaskClose} 
+      <Modal
+        opened={taskOpened}
+        onClose={handleTaskClose}
         withCloseButton={false}
         size="lg"
         radius="md"
@@ -425,63 +479,98 @@ function Home() {
           </Box>
           <Box p="lg" pt={0}>
             <Stack gap="md">
-              <TextInput 
-                label="Task Title" 
-                placeholder="e.g., Finalize Q4 Budget" 
-                required 
-                value={taskFormData.title} 
-                onChange={(e) => setTaskFormData({ ...taskFormData, title: e.currentTarget.value })} 
+              <TextInput
+                label="Task Title"
+                placeholder="e.g., Finalize Q4 Budget"
+                required
+                value={taskFormData.title}
+                onChange={(e) =>
+                  setTaskFormData({
+                    ...taskFormData,
+                    title: e.currentTarget.value,
+                  })
+                }
                 error={taskErrors.title}
               />
-              <Textarea 
-                label="Description" 
-                placeholder="Add more details about this task..." 
-                minRows={3} 
+              <Textarea
+                label="Description"
+                placeholder="Add more details about this task..."
+                minRows={3}
                 value={taskFormData.description}
-                onChange={(e) => setTaskFormData({ ...taskFormData, description: e.currentTarget.value })}
+                onChange={(e) =>
+                  setTaskFormData({
+                    ...taskFormData,
+                    description: e.currentTarget.value,
+                  })
+                }
               />
               <Group grow align="flex-start">
-                <DateTimePicker 
-                  label="Deadline" 
-                  placeholder="mm/dd/yyyy, --:--" 
-                  required 
+                <DateTimePicker
+                  label="Deadline"
+                  placeholder="mm/dd/yyyy, --:--"
+                  required
                   value={taskFormData.deadline}
-                  onChange={(val) => setTaskFormData({ ...taskFormData, deadline: val ? new Date(val) : null })}
+                  onChange={(val) =>
+                    setTaskFormData({
+                      ...taskFormData,
+                      deadline: val ? new Date(val) : null,
+                    })
+                  }
                   error={taskErrors.deadline}
                 />
-                <NumberInput 
-                  label="Est. Minutes" 
-                  defaultValue={60} 
-                  min={0} 
-                  required 
+                <NumberInput
+                  label="Est. Minutes"
+                  defaultValue={60}
+                  min={0}
+                  required
                   value={taskFormData.estimatedMinutes}
-                  onChange={(val) => setTaskFormData({ ...taskFormData, estimatedMinutes: Number(val) || 0 })}
+                  onChange={(val) =>
+                    setTaskFormData({
+                      ...taskFormData,
+                      estimatedMinutes: Number(val) || 0,
+                    })
+                  }
                 />
               </Group>
               <Box>
-                <Text size="sm" fw={500} mb={4}>Priority Level</Text>
-                <Rating 
-                  size="lg" 
-                  defaultValue={0} 
-                  count={5} 
+                <Text size="sm" fw={500} mb={4}>
+                  Priority Level
+                </Text>
+                <Rating
+                  size="lg"
+                  defaultValue={0}
+                  count={5}
                   value={taskFormData.priority}
-                  onChange={(val) => setTaskFormData({ ...taskFormData, priority: val })}
+                  onChange={(val) =>
+                    setTaskFormData({ ...taskFormData, priority: val })
+                  }
                 />
-                <Text size="xs" c="dimmed" mt={4}>Select from 1 to 5 stars</Text>
+                <Text size="xs" c="dimmed" mt={4}>
+                  Select from 1 to 5 stars
+                </Text>
               </Box>
             </Stack>
           </Box>
-          <Group justify="flex-end" p="md" bg="gray.0" style={{ borderTop: '1px solid var(--mantine-color-gray-2)' }}>
-            <Button variant="subtle" color="gray" onClick={handleTaskClose}>Cancel</Button>
-            <Button color="indigo.9" onClick={handleCreateTask}>Create Task</Button>
+          <Group
+            justify="flex-end"
+            p="md"
+            bg="gray.0"
+            style={{ borderTop: "1px solid var(--mantine-color-gray-2)" }}
+          >
+            <Button variant="subtle" color="gray" onClick={handleTaskClose}>
+              Cancel
+            </Button>
+            <Button color="indigo.9" onClick={handleCreateTask}>
+              Create Task
+            </Button>
           </Group>
         </Stack>
       </Modal>
 
       {/* -------------------- New Event Modal -------------------- */}
-      <Modal 
-        opened={eventOpened} 
-        onClose={handleEventClose} 
+      <Modal
+        opened={eventOpened}
+        onClose={handleEventClose}
         withCloseButton={true}
         title={
           <Group gap="sm">
@@ -493,42 +582,66 @@ function Home() {
         radius="md"
       >
         <Stack gap="md">
-          <TextInput 
-            label="Title" 
-            placeholder="Project Sync or Deep Work Session" 
-            required 
-            value={eventFormData.title} 
-            onChange={(e) => setEventFormData({ ...eventFormData, title: e.currentTarget.value })} 
+          <TextInput
+            label="Title"
+            placeholder="Project Sync or Deep Work Session"
+            required
+            value={eventFormData.title}
+            onChange={(e) =>
+              setEventFormData({
+                ...eventFormData,
+                title: e.currentTarget.value,
+              })
+            }
             error={eventErrors.title}
           />
-          <Textarea 
-            label="Description" 
-            placeholder="Briefly describe the agenda or goals..." 
-            minRows={3} 
+          <Textarea
+            label="Description"
+            placeholder="Briefly describe the agenda or goals..."
+            minRows={3}
             value={eventFormData.description}
-            onChange={(e) => setEventFormData({ ...eventFormData, description: e.currentTarget.value })}
+            onChange={(e) =>
+              setEventFormData({
+                ...eventFormData,
+                description: e.currentTarget.value,
+              })
+            }
           />
           <Group grow align="flex-start">
-            <DateTimePicker 
-              label="Start At" 
-              placeholder="Select start date and time" 
-              required 
+            <DateTimePicker
+              label="Start At"
+              placeholder="Select start date and time"
+              required
               value={eventFormData.startAt}
-              onChange={(val) => setEventFormData({ ...eventFormData, startAt: val ? new Date(val) : null })}
+              onChange={(val) =>
+                setEventFormData({
+                  ...eventFormData,
+                  startAt: val ? new Date(val) : null,
+                })
+              }
               error={eventErrors.startAt}
             />
-            <DateTimePicker 
-              label="End At" 
-              placeholder="Select end date and time" 
-              required 
+            <DateTimePicker
+              label="End At"
+              placeholder="Select end date and time"
+              required
               value={eventFormData.endAt}
-              onChange={(val) => setEventFormData({ ...eventFormData, endAt: val ? new Date(val) : null })}
+              onChange={(val) =>
+                setEventFormData({
+                  ...eventFormData,
+                  endAt: val ? new Date(val) : null,
+                })
+              }
               error={eventErrors.endAt}
             />
           </Group>
           <Group justify="flex-end" mt="md">
-            <Button variant="subtle" color="gray" onClick={handleEventClose}>Cancel</Button>
-            <Button color="indigo.9" onClick={handleCreateEvent}>Create Event</Button>
+            <Button variant="subtle" color="gray" onClick={handleEventClose}>
+              Cancel
+            </Button>
+            <Button color="indigo.9" onClick={handleCreateEvent}>
+              Create Event
+            </Button>
           </Group>
         </Stack>
       </Modal>
@@ -548,27 +661,50 @@ function Home() {
         padding={0}
       >
         <Grid>
-          <Grid.Col span={{ base: 12, md: 7 }} p="lg" style={{ borderRight: '1px solid var(--mantine-color-gray-2)' }}>
+          <Grid.Col
+            span={{ base: 12, md: 7 }}
+            p="lg"
+            style={{ borderRight: "1px solid var(--mantine-color-gray-2)" }}
+          >
             <Box mb="xl">
-              <Text fw={600} size="lg">{selectedCalendarDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</Text>
-              <Text size="xs" c="dimmed" tt="uppercase" fw={700} mt={4}>Productivity Cycle Active</Text>
+              <Text fw={600} size="lg">
+                {selectedCalendarDate.toLocaleString("default", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </Text>
+              <Text size="xs" c="dimmed" tt="uppercase" fw={700} mt={4}>
+                Productivity Cycle Active
+              </Text>
             </Box>
-            
+
             <DatePicker
               size="md"
               date={selectedCalendarDate}
-              onDateChange={(val: any) => setSelectedCalendarDate(new Date(val))}
-              onChange={(val: any) => { if (val) setSelectedCalendarDate(new Date(val)) }}
+              onDateChange={(val: Date | string | null) => {
+                if (val) setSelectedCalendarDate(new Date(val));
+              }}
+              onChange={(val: Date | string | null) => {
+                if (val) setSelectedCalendarDate(new Date(val));
+              }}
               value={selectedCalendarDate}
-              renderDay={(d: any) => {
+              renderDay={(d: Date | string) => {
                 const date = new Date(d);
                 const dayStart = getStartOfDay(date);
                 const dayEnd = getEndOfDay(date);
-                const dayEvents = events.filter(e => e.getStartAt() >= dayStart && e.getStartAt() <= dayEnd);
+                const dayEvents = events.filter(
+                  (e) => e.getStartAt() >= dayStart && e.getStartAt() <= dayEnd,
+                );
                 const hasEvents = dayEvents.length > 0;
-                
+
                 return (
-                  <Indicator size={6} color="indigo" offset={-4} disabled={!hasEvents} position="bottom-center">
+                  <Indicator
+                    size={6}
+                    color="indigo"
+                    offset={-4}
+                    disabled={!hasEvents}
+                    position="bottom-center"
+                  >
                     <Box>{date.getDate()}</Box>
                   </Indicator>
                 );
@@ -576,14 +712,22 @@ function Home() {
             />
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 5 }} p="lg">
-            <Text size="xs" c="indigo.6" tt="uppercase" fw={700} mb={4}>Selected Day</Text>
+            <Text size="xs" c="indigo.6" tt="uppercase" fw={700} mb={4}>
+              Selected Day
+            </Text>
             <Title order={4} mb="xl">
-              {selectedCalendarDate.toLocaleDateString('default', { weekday: 'long', month: 'short', day: 'numeric' })}
+              {selectedCalendarDate.toLocaleDateString("default", {
+                weekday: "long",
+                month: "short",
+                day: "numeric",
+              })}
             </Title>
-            
+
             <Stack gap="md">
               {selectedDayEvents.length === 0 ? (
-                <Text c="dimmed" fs="italic" size="sm">No events on this day.</Text>
+                <Text c="dimmed" fs="italic" size="sm">
+                  No events on this day.
+                </Text>
               ) : (
                 selectedDayEvents.map((event) => {
                   const timeStr = event.getStartAt().toLocaleTimeString([], {
@@ -592,9 +736,21 @@ function Home() {
                   });
                   return (
                     <Group key={event.getId()} align="flex-start" wrap="nowrap">
-                      <Text size="xs" c="dimmed" fw={600} w={40}>{timeStr}</Text>
-                      <Card p="sm" radius="md" withBorder style={{ borderLeft: '4px solid var(--mantine-color-indigo-6)', flex: 1 }}>
-                        <Text fw={600} size="sm">{event.getTitle()}</Text>
+                      <Text size="xs" c="dimmed" fw={600} w={40}>
+                        {timeStr}
+                      </Text>
+                      <Card
+                        p="sm"
+                        radius="md"
+                        withBorder
+                        style={{
+                          borderLeft: "4px solid var(--mantine-color-indigo-6)",
+                          flex: 1,
+                        }}
+                      >
+                        <Text fw={600} size="sm">
+                          {event.getTitle()}
+                        </Text>
                         {event.getDescription() && (
                           <Text size="xs" c="dimmed" mt={4}>
                             {event.getDescription()}
