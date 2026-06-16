@@ -135,7 +135,7 @@ function Home() {
         data: {
           title: taskFormData.title,
           description: taskFormData.description,
-          deadline: taskFormData.deadline?.toISOString() ?? "",
+          deadline: taskFormData.deadline ?? new Date(),
           estimatedMinutes: taskFormData.estimatedMinutes,
           priority: taskFormData.priority,
         },
@@ -194,8 +194,8 @@ function Home() {
         data: {
           title: eventFormData.title,
           description: eventFormData.description,
-          startAt: eventFormData.startAt?.toISOString() ?? "",
-          endAt: eventFormData.endAt?.toISOString() ?? "",
+          startAt: eventFormData.startAt ?? new Date(),
+          endAt: eventFormData.endAt ?? new Date(),
         },
       });
 

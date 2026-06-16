@@ -35,16 +35,16 @@ export const createUpcomingEvent = createServerFn({ method: "POST" })
     (data: {
       title: string;
       description: string;
-      startAt: string;
-      endAt: string;
+      startAt: Date;
+      endAt: Date;
     }) => data,
   )
   .handler(async ({ data }): Promise<UpcomingEventListItem> => {
     const event = await createService.handle(
       data.title,
       data.description,
-      new Date(data.startAt),
-      new Date(data.endAt),
+      data.startAt,
+      data.endAt,
     );
     return {
       id: event.getId(),

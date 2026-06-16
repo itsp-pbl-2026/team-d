@@ -44,7 +44,7 @@ export const createTask = createServerFn({ method: "POST" })
     (data: {
       title: string;
       description: string;
-      deadline: string;
+      deadline: Date;
       estimatedMinutes: number;
       priority: number;
     }) => data,
@@ -53,7 +53,7 @@ export const createTask = createServerFn({ method: "POST" })
     const task = await createService.handle(
       data.title,
       data.description,
-      new Date(data.deadline),
+      data.deadline,
       data.estimatedMinutes,
       data.priority,
     );
