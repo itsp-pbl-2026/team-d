@@ -1,19 +1,28 @@
+import type { Id } from "#/features/id";
 import type { Task } from "../../task/model/task";
+
+export type ScheduleId = Id<Schedule>;
 export class Schedule {
-  #id: string;
+  #id: ScheduleId;
   #title: string;
   #startAt: Date;
   #endAt: Date;
   #task: Task;
 
-  constructor(id: string, title: string, startAt: Date, endAt: Date, task: Task) {
+  constructor(
+    id: ScheduleId,
+    title: string,
+    startAt: Date,
+    endAt: Date,
+    task: Task,
+  ) {
     this.#id = id;
     this.#title = title;
     this.#startAt = startAt;
     this.#endAt = endAt;
     this.#task = task;
   }
-  getId(): string {
+  getId(): ScheduleId {
     return this.#id;
   }
   getTitle(): string {
@@ -26,6 +35,6 @@ export class Schedule {
     return this.#endAt;
   }
   getTask(): Task {
-    return this.#task;  
+    return this.#task;
   }
 }
