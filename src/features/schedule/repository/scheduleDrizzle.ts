@@ -1,19 +1,21 @@
 import { eq } from "drizzle-orm";
-import { drizzleClient } from "../../../db/drizzleClient";
-import { schedule as scheduleTable } from "../../../db/schema";
+import type { DrizzleClient } from "#/db/drizzleClient";
+import { schedule as scheduleTable } from "#/db/schema";
 import { TaskDrizzleRepository } from "../../task/repository/taskDrizzle";
 import { Schedule, type ScheduleId } from "../model/schedule";
 import type { ScheduleRepository } from "./schedule";
 
 export class ScheduleDrizzleRepository implements ScheduleRepository {
+  #db: DrizzleClient;
   #taskRepository: TaskDrizzleRepository;
 
-  constructor() {
-    this.#taskRepository = new TaskDrizzleRepository(drizzleClient);
+  constructor(db: DrizzleClient) {
+    this.#db = db;
+    this.#taskRepository = new TaskDrizzleRepository(db);
   }
 
   async findById(id: ScheduleId): Promise<Schedule | undefined> {
-    const resultSchedule = await drizzleClient.query.schedule.findFirst({
+    const resultSchedule = await this.#db.query.schedule.findFirst({
       where: eq(scheduleTable.id, id),
     });
 
@@ -36,7 +38,7 @@ export class ScheduleDrizzleRepository implements ScheduleRepository {
   }
 
   async findAll(): Promise<Schedule[]> {
-    const allSchedulesFromTable = await drizzleClient.query.schedule.findMany();
+    const allSchedulesFromTable = await this.#db.query.schedule.findMany();
 
     const allSchedules = await Promise.all(
       allSchedulesFromTable.map(async (oneSchedule) => {
@@ -58,7 +60,7 @@ export class ScheduleDrizzleRepository implements ScheduleRepository {
   }
 
   async save(schedule: Schedule) {
-    await drizzleClient
+    await this.#db
       .insert(scheduleTable)
       .values({
         id: schedule.getId(),
@@ -81,6 +83,6 @@ export class ScheduleDrizzleRepository implements ScheduleRepository {
   }
 
   async delete(id: ScheduleId) {
-    await drizzleClient.delete(scheduleTable).where(eq(scheduleTable.id, id));
+    await this.#db.delete(scheduleTable).where(eq(scheduleTable.id, id));
   }
 }
