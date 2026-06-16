@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import type { ScheduleId } from "#/features/schedule/model/schedule";
 import type { TaskId } from "#/features/task/model/task";
 import type { UpcomingEventId } from "#/features/upcomingEvent/model/upcomingEvent";
 
@@ -27,4 +28,15 @@ export const task = sqliteTable("task", {
   createdAt: integer("created_at", { mode: "timestamp" }).default(
     sql`(unixepoch())`,
   ),
+});
+
+export const schedule = sqliteTable("schedule", {
+  id: text().$type<ScheduleId>().primaryKey(),
+  title: text().notNull(),
+  startAt: integer("start_at", { mode: "timestamp" }).notNull(),
+  endAt: integer("end_at", { mode: "timestamp" }).notNull(),
+  taskId: text("task_id")
+    .$type<TaskId>()
+    .notNull()
+    .references(() => task.id),
 });
