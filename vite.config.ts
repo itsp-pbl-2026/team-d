@@ -1,4 +1,3 @@
-import { cloudflare } from "@cloudflare/vite-plugin";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
@@ -8,7 +7,7 @@ const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
     devtools(),
-    cloudflare({ viteEnvironment: { name: "ssr" } }),
+    // cloudflare({ viteEnvironment: { name: "ssr" } }), // Temporarily disable Cloudflare emulator for local Node.js SQLite (better-sqlite3)
     tanstackStart(),
     viteReact(),
   ],
