@@ -1,4 +1,4 @@
-import { Button, Group, Stack } from "@mantine/core";
+import { Box, Button, Group, ScrollArea, Stack, Text } from "@mantine/core";
 import type { ScheduleEventData, ScheduleViewLevel } from "@mantine/schedule";
 import { Schedule } from "@mantine/schedule";
 import { createFileRoute } from "@tanstack/react-router";
@@ -82,6 +82,24 @@ function CalenderPage() {
           startTime: "09:00:00",
           endTime: "18:00:00",
         }}
+        renderEventBody={(
+          event: ScheduleEventData<{ description: string }>,
+        ) => (
+          <>
+            <Box>{event.title}</Box>
+            <ScrollArea
+              c="dark"
+              h="100%"
+              styles={{
+                scrollbar: { background: "transparent" },
+              }}
+            >
+              <Text c="dark" size="sm">
+                {event.payload?.description}
+              </Text>
+            </ScrollArea>
+          </>
+        )}
       />
 
       <CreateEventModal
