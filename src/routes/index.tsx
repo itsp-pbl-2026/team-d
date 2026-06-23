@@ -23,15 +23,9 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Calendar, CheckCircle2, Clock, PlayCircle } from "lucide-react";
 import { useState } from "react";
 import { createTask, getTasks } from "#/features/task/api/api";
-import {
-  createUpcomingEvent,
-  getUpcomingEvents,
-} from "#/features/upcomingEvent/api/api";
-import {
-  type CreateEventFormData,
-  type CreateEventFormDataValidated,
-  CreateEventModal,
-} from "#/features/upcomingEvent/components/CreateEventModal";
+import { getUpcomingEvents } from "#/features/upcomingEvent/api/api";
+import { CreateEventModal } from "#/features/upcomingEvent/components/CreateEventModal";
+import { useCreateEventForm } from "#/features/upcomingEvent/hooks/useCreateEventForm";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -50,8 +44,6 @@ function Home() {
 
   const [taskOpened, { open: openTask, close: closeTask }] =
     useDisclosure(false);
-  const [eventOpened, { open: openEvent, close: closeEvent }] =
-    useDisclosure(false);
 
   // Form states
   const [taskFormData, setTaskFormData] = useState({
@@ -63,12 +55,14 @@ function Home() {
   });
   const [taskErrors, setTaskErrors] = useState({ title: "", deadline: "" });
 
-  const [eventFormData, setEventFormData] = useState<CreateEventFormData>({
-    title: "",
-    description: "",
-    startAt: null,
-    endAt: null,
-  });
+  const {
+    opened: eventOpened,
+    open: openEvent,
+    close: handleEventClose,
+    data: eventFormData,
+    setData: setEventFormData,
+    submit: handleCreateEvent,
+  } = useCreateEventForm();
 
   // Task Handlers
   const handleTaskClose = () => {
@@ -107,35 +101,6 @@ function Home() {
       });
     } catch (error) {
       console.error("Failed to create task", error);
-    }
-  };
-
-  // Event Handlers
-  const handleEventClose = () => {
-    closeEvent();
-  };
-
-  const handleCreateEvent = async (data: CreateEventFormDataValidated) => {
-    try {
-      await createUpcomingEvent({
-        data: {
-          title: data.title,
-          description: data.description,
-          startAt: data.startAt,
-          endAt: data.endAt,
-        },
-      });
-
-      router.invalidate();
-      handleEventClose();
-      setEventFormData({
-        title: "",
-        description: "",
-        startAt: null,
-        endAt: null,
-      });
-    } catch (error) {
-      console.error("Failed to create event", error);
     }
   };
 

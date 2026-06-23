@@ -10,19 +10,11 @@ import {
 import { DateTimePicker } from "@mantine/dates";
 import { Calendar } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
+import type {
+  CreateEventFormData,
+  CreateEventFormDataValidated,
+} from "../hooks/useCreateEventForm";
 
-export type CreateEventFormData = {
-  title: string;
-  description: string;
-  startAt: Date | null;
-  endAt: Date | null;
-};
-export type CreateEventFormDataValidated = {
-  title: string;
-  description: string;
-  startAt: Date;
-  endAt: Date;
-};
 export type CreateEventFormError = {
   title: string;
   range: string;
