@@ -29,7 +29,7 @@ import {
 } from "#/features/upcomingEvent/api/api";
 import {
   type CreateEventFormData,
-  type CreateEventFormError,
+  type CreateEventFormDataValidated,
   CreateEventModal,
 } from "#/features/upcomingEvent/components/CreateEventModal";
 
@@ -68,10 +68,6 @@ function Home() {
     description: "",
     startAt: null,
     endAt: null,
-  });
-  const [eventErrors, setEventErrors] = useState<CreateEventFormError>({
-    title: "",
-    range: "",
   });
 
   // Task Handlers
@@ -117,38 +113,16 @@ function Home() {
   // Event Handlers
   const handleEventClose = () => {
     closeEvent();
-    setEventErrors({ title: "", range: "" });
   };
 
-  const handleCreateEvent = async () => {
-    const hasInvalidEnd =
-      eventFormData.startAt &&
-      eventFormData.endAt &&
-      eventFormData.startAt >= eventFormData.endAt;
-
-    const rangeError = !eventFormData.startAt
-      ? "Start Time is required"
-      : !eventFormData.endAt
-        ? "End Time is required"
-        : hasInvalidEnd
-          ? "End Time must be after Start Time"
-          : "";
-
-    const errors = {
-      title: !eventFormData.title.trim() ? "Event Title is required" : "",
-      range: rangeError,
-    };
-
-    setEventErrors(errors);
-    if (errors.title !== "" || errors.range !== "") return;
-
+  const handleCreateEvent = async (data: CreateEventFormDataValidated) => {
     try {
       await createUpcomingEvent({
         data: {
-          title: eventFormData.title,
-          description: eventFormData.description,
-          startAt: eventFormData.startAt ?? new Date(),
-          endAt: eventFormData.endAt ?? new Date(),
+          title: data.title,
+          description: data.description,
+          startAt: data.startAt,
+          endAt: data.endAt,
         },
       });
 
@@ -523,7 +497,6 @@ function Home() {
         onSubmit={handleCreateEvent}
         data={eventFormData}
         setData={setEventFormData}
-        error={eventErrors}
       />
     </Stack>
   );
