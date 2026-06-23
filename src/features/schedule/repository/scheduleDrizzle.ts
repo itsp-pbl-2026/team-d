@@ -1,29 +1,41 @@
 import { eq } from "drizzle-orm";
 import type { DrizzleClient } from "#/db/drizzleClient";
 import { schedule as scheduleTable } from "#/db/schema";
-import { TaskDrizzleRepository } from "../../task/repository/taskDrizzle";
+import { Task } from "../../task/model/task";
 import { Schedule, type ScheduleId } from "../model/schedule";
 import type { ScheduleRepository } from "./schedule";
 
 export class ScheduleDrizzleRepository implements ScheduleRepository {
   #db: DrizzleClient;
-  #taskRepository: TaskDrizzleRepository;
 
   constructor(db: DrizzleClient) {
     this.#db = db;
-    this.#taskRepository = new TaskDrizzleRepository(db);
   }
 
   async findById(id: ScheduleId): Promise<Schedule | undefined> {
     const resultSchedule = await this.#db.query.schedule.findFirst({
       where: eq(scheduleTable.id, id),
+      with: {
+        task: true,
+      },
     });
 
     if (!resultSchedule) {
       return undefined;
     }
 
-    const task = await this.#taskRepository.findById(resultSchedule.taskId);
+    const task = new Task(
+      resultSchedule.task.id,
+      resultSchedule.task.title,
+      resultSchedule.task.description ?? "",
+      resultSchedule.task.deadline,
+      resultSchedule.task.estimatedMinutes,
+      resultSchedule.task.actualMinutes ?? 0,
+      resultSchedule.task.priority ?? 0,
+      resultSchedule.task.progress ?? 0,
+      resultSchedule.task.status ?? "",
+    );
+
     if (!task) {
       throw new Error("Task not found for the schedule");
     }
@@ -38,25 +50,35 @@ export class ScheduleDrizzleRepository implements ScheduleRepository {
   }
 
   async findAll(): Promise<Schedule[]> {
-    const allSchedulesFromTable = await this.#db.query.schedule.findMany();
+    const allSchedulesFromTable = await this.#db.query.schedule.findMany({
+      with: {
+        task: true,
+      },
+    });
+    return allSchedulesFromTable.map((oneSchedule) => {
+      const task = new Task(
+        oneSchedule.task.id,
+        oneSchedule.task.title,
+        oneSchedule.task.description ?? "",
+        oneSchedule.task.deadline,
+        oneSchedule.task.estimatedMinutes,
+        oneSchedule.task.actualMinutes ?? 0,
+        oneSchedule.task.priority ?? 0,
+        oneSchedule.task.progress ?? 0,
+        oneSchedule.task.status ?? "",
+      );
 
-    const allSchedules = await Promise.all(
-      allSchedulesFromTable.map(async (oneSchedule) => {
-        const task = await this.#taskRepository.findById(oneSchedule.taskId);
-        if (!task) {
-          throw new Error("Task not found for the schedule");
-        }
-        return new Schedule(
-          oneSchedule.id,
-          oneSchedule.title,
-          oneSchedule.startAt,
-          oneSchedule.endAt,
-          task,
-        );
-      }),
-    );
-
-    return allSchedules;
+      if (!task) {
+        throw new Error("Task not found for the schedule");
+      }
+      return new Schedule(
+        oneSchedule.id,
+        oneSchedule.title,
+        oneSchedule.startAt,
+        oneSchedule.endAt,
+        task,
+      );
+    });
   }
 
   async save(schedule: Schedule) {
