@@ -117,6 +117,7 @@ export const CreateEventModal = ({
         />
         <DateTimePicker
           type="range"
+          allowSingleDateInRange
           label="Event Period"
           placeholder="Select start and end date/time"
           required
