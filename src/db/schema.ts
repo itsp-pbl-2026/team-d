@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import type { ScheduleId } from "#/features/schedule/model/schedule";
 import type { TaskId } from "#/features/task/model/task";
@@ -40,3 +40,10 @@ export const schedule = sqliteTable("schedule", {
     .notNull()
     .references(() => task.id),
 });
+
+export const scheduleRelations = relations(schedule, ({ one }) => ({
+  task: one(task, {
+    fields: [schedule.taskId],
+    references: [task.id],
+  }),
+}));
