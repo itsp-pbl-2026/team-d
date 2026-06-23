@@ -1,67 +1,54 @@
-import { Button, Group, Modal, Stack, TextInput } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Button, Group, Stack } from "@mantine/core";
 import type { ScheduleEventData, ScheduleViewLevel } from "@mantine/schedule";
 import { Schedule } from "@mantine/schedule";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  getUpcomingEvents,
+  type UpcomingEventListItem,
+} from "#/features/upcomingEvent/api/api";
+import { CreateEventModal } from "#/features/upcomingEvent/components/CreateEventModal";
+import { useCreateEventForm } from "#/features/upcomingEvent/hooks/useCreateEventForm";
 
-export const Route = createFileRoute("/calender")({ component: CalenderPage });
+export const Route = createFileRoute("/calender")({
+  loader: async () => {
+    const events = await getUpcomingEvents();
+    return events;
+  },
+  component: CalenderPage,
+});
 
 const today = dayjs().format("YYYY-MM-DD");
 
-const initialEvents: ScheduleEventData[] = [
-  {
-    id: 1,
-    title: "Weekly Standup",
-    start: `${today} 09:00:00`,
-    end: `${today} 10:00:00`,
-    color: "blue",
+const toEventData = (
+  event: UpcomingEventListItem,
+): ScheduleEventData<{ description: string }> => ({
+  id: event.id,
+  title: event.title,
+  payload: {
+    description: event.description,
   },
-  {
-    id: 2,
-    title: "Design Team Sync",
-    start: `${today} 09:30:00`,
-    end: `${today} 11:00:00`,
-    color: "indigo",
-  },
-  {
-    id: 3,
-    title: "Deep Work Block",
-    start: `${today} 10:00:00`,
-    end: `${today} 11:30:00`,
-    color: "gray",
-  },
-  {
-    id: 4,
-    title: "Urgent Review",
-    start: `${today} 11:00:00`,
-    end: `${today} 11:45:00`,
-    color: "red",
-  },
-  {
-    id: 5,
-    title: "LUNCH HOUR",
-    start: `${today} 12:00:00`,
-    end: `${today} 13:00:00`,
-    color: "gray",
-    display: "background",
-  },
-  {
-    id: 6,
-    title: "Client Lunch",
-    start: `${today} 13:00:00`,
-    end: `${today} 14:30:00`,
-    color: "orange",
-  },
-];
+  start: event.startAt,
+  end: event.endAt,
+  color: "blue",
+});
 
 function CalenderPage() {
-  const [events] = useState<ScheduleEventData[]>(initialEvents);
+  const events = Route.useLoaderData();
+  const eventData = useMemo(() => events.map(toEventData), [events]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [view, setView] = useState<ScheduleViewLevel>("week");
-  const [opened, { open, close }] = useDisclosure(false);
+
+  const {
+    opened: eventOpened,
+    open: openEvent,
+    close: handleEventClose,
+    data: eventFormData,
+    setData: setEventFormData,
+    submit: handleCreateEvent,
+  } = useCreateEventForm();
 
   // Derive a string format for the schedule component
   const scheduleDate = selectedDate
@@ -71,13 +58,17 @@ function CalenderPage() {
   return (
     <Stack gap="lg" h="100%">
       <Group justify="right">
-        <Button leftSection={<Plus size={16} />} color="indigo" onClick={open}>
+        <Button
+          leftSection={<Plus size={16} />}
+          color="indigo"
+          onClick={openEvent}
+        >
           Add Event
         </Button>
       </Group>
 
       <Schedule
-        events={events}
+        events={eventData}
         date={scheduleDate}
         onDateChange={(d) => setSelectedDate(new Date(d))}
         view={view}
@@ -93,18 +84,13 @@ function CalenderPage() {
         }}
       />
 
-      <Modal opened={opened} onClose={close} title="Add New Event" centered>
-        <Stack gap="md">
-          <TextInput label="Title" placeholder="Event title" required />
-          <Group grow>
-            <TextInput label="Start Time" type="datetime-local" required />
-            <TextInput label="End Time" type="datetime-local" required />
-          </Group>
-          <Button fullWidth onClick={close}>
-            Save Event
-          </Button>
-        </Stack>
-      </Modal>
+      <CreateEventModal
+        opened={eventOpened}
+        onClose={handleEventClose}
+        onSubmit={handleCreateEvent}
+        data={eventFormData}
+        setData={setEventFormData}
+      />
     </Stack>
   );
 }
