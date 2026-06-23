@@ -36,10 +36,6 @@ export class ScheduleDrizzleRepository implements ScheduleRepository {
       resultSchedule.task.status ?? "",
     );
 
-    if (!task) {
-      throw new Error("Task not found for the schedule");
-    }
-
     return new Schedule(
       resultSchedule.id,
       resultSchedule.title,
@@ -68,9 +64,6 @@ export class ScheduleDrizzleRepository implements ScheduleRepository {
         oneSchedule.task.status ?? "",
       );
 
-      if (!task) {
-        throw new Error("Task not found for the schedule");
-      }
       return new Schedule(
         oneSchedule.id,
         oneSchedule.title,
