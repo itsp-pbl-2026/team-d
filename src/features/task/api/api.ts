@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { drizzleClient } from "#/db/drizzleClient";
-import type { Task } from "../model/task";
+import type { Task, TaskId } from "../model/task";
 import { TaskDrizzleRepository } from "../repository/taskDrizzle";
 import { CreateTaskService } from "../service/create";
 import { DeleteTaskService } from "../service/delete";
@@ -82,6 +82,7 @@ export const updateTask = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<TaskListItem> => {
     const updated = await updateService.handle({
       ...data,
+      id: data.id as TaskId,
       deadline:
         data.deadline !== undefined ? new Date(data.deadline) : undefined,
     });
@@ -91,5 +92,5 @@ export const updateTask = createServerFn({ method: "POST" })
 export const deleteTask = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data }): Promise<void> => {
-    await deleteService.handle(data.id);
+    await deleteService.handle(data.id as TaskId);
   });

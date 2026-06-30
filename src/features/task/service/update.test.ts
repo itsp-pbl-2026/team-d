@@ -36,7 +36,7 @@ describe("UpdateTaskService", () => {
     mockedTaskRepository.save.mockResolvedValue(undefined);
 
     const updated = await service.handle({
-      id: "task-1",
+      id: "task-1" as TaskId,
       title: "New Title",
       progress: 50,
       status: "in_progress",

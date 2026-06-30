@@ -9,12 +9,7 @@ import {
   Title,
 } from "@mantine/core";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import {
-  Calendar as CalendarIcon,
-  CheckSquare,
-  Home,
-  Zap,
-} from "lucide-react";
+import { Calendar as CalendarIcon, CheckSquare, Home, Zap } from "lucide-react";
 
 const NAV_LINKS = [
   { icon: Home, label: "Home", to: "/" },

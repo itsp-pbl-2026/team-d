@@ -8,7 +8,7 @@ export class DeleteTaskService {
     this.#taskRepository = taskRepository;
   }
 
-  async handle(id: string): Promise<void> {
-    await this.#taskRepository.delete(id as TaskId);
+  async handle(id: TaskId): Promise<void> {
+    await this.#taskRepository.delete(id);
   }
 }

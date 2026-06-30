@@ -9,9 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-<<<<<<< HEAD
 import { Route as TasksRouteImport } from './routes/tasks'
-import { Route as ScheduleRouteImport } from './routes/schedule'
+import { Route as CalenderRouteImport } from './routes/calender'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TasksRoute = TasksRouteImport.update({
@@ -19,17 +18,9 @@ const TasksRoute = TasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ScheduleRoute = ScheduleRouteImport.update({
-  id: '/schedule',
-  path: '/schedule',
-=======
-import { Route as CalenderRouteImport } from './routes/calender'
-import { Route as IndexRouteImport } from './routes/index'
-
 const CalenderRoute = CalenderRouteImport.update({
   id: '/calender',
   path: '/calender',
->>>>>>> origin/main
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -40,60 +31,36 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-<<<<<<< HEAD
-  '/schedule': typeof ScheduleRoute
+  '/calender': typeof CalenderRoute
   '/tasks': typeof TasksRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/schedule': typeof ScheduleRoute
+  '/calender': typeof CalenderRoute
   '/tasks': typeof TasksRoute
-=======
-  '/calender': typeof CalenderRoute
-}
-export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/calender': typeof CalenderRoute
->>>>>>> origin/main
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-<<<<<<< HEAD
-  '/schedule': typeof ScheduleRoute
+  '/calender': typeof CalenderRoute
   '/tasks': typeof TasksRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/schedule' | '/tasks'
+  fullPaths: '/' | '/calender' | '/tasks'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/schedule' | '/tasks'
-  id: '__root__' | '/' | '/schedule' | '/tasks'
-=======
-  '/calender': typeof CalenderRoute
-}
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/calender'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/calender'
-  id: '__root__' | '/' | '/calender'
->>>>>>> origin/main
+  to: '/' | '/calender' | '/tasks'
+  id: '__root__' | '/' | '/calender' | '/tasks'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-<<<<<<< HEAD
-  ScheduleRoute: typeof ScheduleRoute
-  TasksRoute: typeof TasksRoute
-=======
   CalenderRoute: typeof CalenderRoute
->>>>>>> origin/main
+  TasksRoute: typeof TasksRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-<<<<<<< HEAD
     '/tasks': {
       id: '/tasks'
       path: '/tasks'
@@ -101,18 +68,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TasksRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/schedule': {
-      id: '/schedule'
-      path: '/schedule'
-      fullPath: '/schedule'
-      preLoaderRoute: typeof ScheduleRouteImport
-=======
     '/calender': {
       id: '/calender'
       path: '/calender'
       fullPath: '/calender'
       preLoaderRoute: typeof CalenderRouteImport
->>>>>>> origin/main
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -127,12 +87,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-<<<<<<< HEAD
-  ScheduleRoute: ScheduleRoute,
-  TasksRoute: TasksRoute,
-=======
   CalenderRoute: CalenderRoute,
->>>>>>> origin/main
+  TasksRoute: TasksRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

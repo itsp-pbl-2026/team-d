@@ -22,7 +22,7 @@ describe("DeleteTaskService", () => {
     const service = new DeleteTaskService(mockedTaskRepository);
     mockedTaskRepository.delete.mockResolvedValue(undefined);
 
-    await service.handle("task-1");
+    await service.handle("task-1" as TaskId);
 
     expect(mockedTaskRepository.delete).toHaveBeenCalledWith(
       "task-1" as TaskId,

@@ -9,7 +9,7 @@ export class UpdateTaskService {
   }
 
   async handle(data: {
-    id: string;
+    id: TaskId;
     title?: string;
     description?: string;
     deadline?: Date;
@@ -19,25 +19,21 @@ export class UpdateTaskService {
     progress?: number;
     status?: string;
   }): Promise<Task> {
-    const task = await this.#taskRepository.findById(data.id as TaskId);
+    const task = await this.#taskRepository.findById(data.id);
     if (task == null) {
       throw new Error("No Task found.");
     }
 
     const updated = new Task(
       task.getId(),
-      data.title !== undefined ? data.title : task.getTitle(),
-      data.description !== undefined ? data.description : task.getDescription(),
-      data.deadline !== undefined ? data.deadline : task.getDeadline(),
-      data.estimatedMinutes !== undefined
-        ? data.estimatedMinutes
-        : task.getEstimatedMinutes(),
-      data.actualMinutes !== undefined
-        ? data.actualMinutes
-        : task.getActualMinutes(),
-      data.priority !== undefined ? data.priority : task.getPriority(),
-      data.progress !== undefined ? data.progress : task.getProgress(),
-      data.status !== undefined ? data.status : task.getStatus(),
+      data.title ?? task.getTitle(),
+      data.description ?? task.getDescription(),
+      data.deadline ?? task.getDeadline(),
+      data.estimatedMinutes ?? task.getEstimatedMinutes(),
+      data.actualMinutes ?? task.getActualMinutes(),
+      data.priority ?? task.getPriority(),
+      data.progress ?? task.getProgress(),
+      data.status ?? task.getStatus(),
     );
 
     await this.#taskRepository.save(updated);
