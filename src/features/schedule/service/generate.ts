@@ -58,10 +58,12 @@ export class GenerateScheduleService {
       this.#upcomingEventRepository.findAll(),
     ]);
 
-    const generatedSchedules = await this.#generateScheduleDomainService.handle({
-      tasks: tasks.map(serializeTask),
-      upcomingEvents: upcomingEvents.map(serializeUpcomingEvent),
-    });
+    const generatedSchedules = await this.#generateScheduleDomainService.handle(
+      {
+        tasks: tasks.map(serializeTask),
+        upcomingEvents: upcomingEvents.map(serializeUpcomingEvent),
+      },
+    );
 
     const tasksById = new Map<string, Task>(
       tasks.map((task) => [task.getId(), task]),

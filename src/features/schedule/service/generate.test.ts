@@ -5,8 +5,8 @@ import type { TaskRepository } from "#/features/task/repository/task";
 import { UpcomingEvent } from "#/features/upcomingEvent/model/upcomingEvent";
 import type { UpcomingEventRepository } from "#/features/upcomingEvent/repository/upcomingEvent";
 import type { ScheduleRepository } from "../repository/schedule";
-import type { GenerateScheduleDomainService } from "./generateDomainService";
 import { GenerateScheduleService } from "./generate";
+import type { GenerateScheduleDomainService } from "./generateDomainService";
 
 const mockedTaskRepository = {
   findById: vi.fn(),
