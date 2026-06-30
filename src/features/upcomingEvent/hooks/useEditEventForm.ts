@@ -2,25 +2,23 @@ import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 import { editUpcomingEvent, type UpcomingEventListItem } from "../api/api";
+import type { UpcomingEventId } from "../model/upcomingEvent";
 import {
-  createEmptyEventFormData,
-  type EventFormData,
   type EventFormDataValidated,
-} from "./eventForm";
+  useEventFormData,
+} from "./useEventFormData";
 
 export const useEditEventForm = () => {
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
-  const [editingEventId, setEditingEventId] = useState<
-    UpcomingEventListItem["id"] | null
-  >(null);
-  const [data, setData] = useState<EventFormData>(createEmptyEventFormData());
+  const [editingEventId, setEditingEventId] = useState<UpcomingEventId>();
+  const { data, setData, reset } = useEventFormData();
 
   const handleClose = useCallback(() => {
     close();
-    setEditingEventId(null);
-    setData(createEmptyEventFormData());
-  }, [close]);
+    setEditingEventId(undefined);
+    reset();
+  }, [close, reset]);
 
   const openForEdit = useCallback(
     (event: UpcomingEventListItem) => {
@@ -33,7 +31,7 @@ export const useEditEventForm = () => {
       });
       open();
     },
-    [open],
+    [open, setData],
   );
 
   const submit = useCallback(
@@ -64,8 +62,8 @@ export const useEditEventForm = () => {
 
   return {
     opened,
+    open: openForEdit,
     close: handleClose,
-    openForEdit,
     data,
     setData,
     submit,

@@ -1,3 +1,5 @@
+import { useCallback, useState } from "react";
+
 export type EventFormData = {
   title: string;
   description: string;
@@ -12,9 +14,16 @@ export type EventFormDataValidated = {
   endAt: Date;
 };
 
-export const createEmptyEventFormData = (): EventFormData => ({
+const createEmptyData = (): EventFormData => ({
   title: "",
   description: "",
   startAt: null,
   endAt: null,
 });
+
+export const useEventFormData = () => {
+  const [data, setData] = useState(createEmptyData());
+  const reset = useCallback(() => setData(createEmptyData()), []);
+
+  return { data, setData, reset };
+};
