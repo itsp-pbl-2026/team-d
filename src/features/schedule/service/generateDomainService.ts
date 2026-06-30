@@ -35,15 +35,13 @@ export interface GenerateScheduleDomainService {
   ): Promise<GenerateScheduleResult[]>;
 }
 
-export class GenerateDomainService
-  implements GenerateScheduleDomainService
-{
+export class GenerateDomainService implements GenerateScheduleDomainService {
   async handle(
     input: GenerateScheduleDomainServiceInput,
   ): Promise<GenerateScheduleResult[]> {
-    const inputJson = this.generateInputJson(input);
+    const _inputJson = this.generateInputJson(input);
 
-      // TODO: API呼び出し
+    // TODO: API呼び出し
 
     const outputJson = `[
     {
@@ -53,18 +51,14 @@ export class GenerateDomainService
     }
   ]`;
 
-  const output = this.parseOutputJson(outputJson);
+    const output = this.parseOutputJson(outputJson);
 
-  return output;
-
+    return output;
   }
 
-
-  private generateInputJson(
-    input: GenerateScheduleDomainServiceInput,
-  ): string {
+  private generateInputJson(input: GenerateScheduleDomainServiceInput): string {
     return JSON.stringify({
-      fixed_events: input.events.map((event) => ({
+      fixedEvents: input.events.map((event) => ({
         id: event.id,
         start: event.startAt.toISOString(),
         end: event.endAt.toISOString(),
@@ -72,28 +66,24 @@ export class GenerateDomainService
 
       tasks: input.tasks.map((task) => ({
         id: task.id,
-        duration_min: task.estimatedMinutes,
+        durationMin: task.estimatedMinutes,
         deadline: task.deadline.toISOString(),
         priority: task.priority,
       })),
     });
   }
 
-private parseOutputJson(
-  output: string,
-): GenerateScheduleResult[] {
-  const schedules = JSON.parse(output) as {
-    task: string;
-    start: string;
-    end: string;
-  }[];
+  private parseOutputJson(output: string): GenerateScheduleResult[] {
+    const schedules = JSON.parse(output) as {
+      task: string;
+      start: string;
+      end: string;
+    }[];
 
-  return schedules.map((schedule) => ({
-    taskId: schedule.task,
-    startAt: new Date(schedule.start),
-    endAt: new Date(schedule.end),
-  }));
-}
-
-
+    return schedules.map((schedule) => ({
+      taskId: schedule.task,
+      startAt: new Date(schedule.start),
+      endAt: new Date(schedule.end),
+    }));
+  }
 }
