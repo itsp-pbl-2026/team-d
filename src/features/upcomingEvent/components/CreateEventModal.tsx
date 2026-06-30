@@ -10,10 +10,7 @@ import {
 import { DateTimePicker } from "@mantine/dates";
 import { Calendar } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
-import type {
-  CreateEventFormData,
-  CreateEventFormDataValidated,
-} from "../hooks/useCreateEventForm";
+import type { EventFormData, EventFormDataValidated } from "../hooks/eventForm";
 
 export type CreateEventFormError = {
   title: string;
@@ -22,9 +19,10 @@ export type CreateEventFormError = {
 export type CreateEventModalProps = {
   opened: boolean;
   onClose: () => void;
-  onSubmit: (data: CreateEventFormDataValidated) => void;
-  data: CreateEventFormData;
-  setData: Dispatch<SetStateAction<CreateEventFormData>>;
+  onSubmit: (data: EventFormDataValidated) => void | Promise<void>;
+  data: EventFormData;
+  setData: Dispatch<SetStateAction<EventFormData>>;
+  mode?: "create" | "edit";
 };
 
 export const CreateEventModal = ({
@@ -33,11 +31,13 @@ export const CreateEventModal = ({
   onSubmit,
   data,
   setData,
+  mode = "create",
 }: CreateEventModalProps) => {
   const [error, setError] = useState<CreateEventFormError>({
     title: "",
     range: "",
   });
+  const isEdit = mode === "edit";
 
   const handleClose = () => {
     onClose();
@@ -81,7 +81,7 @@ export const CreateEventModal = ({
       title={
         <Group gap="sm">
           <Calendar size={20} color="var(--mantine-color-indigo-6)" />
-          <Title order={4}>Create New Event</Title>
+          <Title order={4}>{isEdit ? "Edit Event" : "Create New Event"}</Title>
         </Group>
       }
       size="md"
@@ -136,7 +136,7 @@ export const CreateEventModal = ({
             Cancel
           </Button>
           <Button color="indigo" onClick={handleSubmit}>
-            Create Event
+            {isEdit ? "Save Changes" : "Create Event"}
           </Button>
         </Group>
       </Stack>
