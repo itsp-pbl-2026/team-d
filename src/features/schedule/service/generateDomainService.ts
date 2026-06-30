@@ -34,3 +34,66 @@ export interface GenerateScheduleDomainService {
     input: GenerateScheduleDomainServiceInput,
   ): Promise<GenerateScheduleResult[]>;
 }
+
+export class GenerateDomainService
+  implements GenerateScheduleDomainService
+{
+  async handle(
+    input: GenerateScheduleDomainServiceInput,
+  ): Promise<GenerateScheduleResult[]> {
+    const inputJson = this.generateInputJson(input);
+
+      // TODO: API呼び出し
+
+    const outputJson = `[
+    {
+      "task": "研究進捗",
+      "start": "2026-06-22T09:00:00",
+      "end": "2026-06-22T10:30:00"
+    }
+  ]`;
+
+  const output = this.parseOutputJson(outputJson);
+
+  return output;
+
+  }
+
+
+  private generateInputJson(
+    input: GenerateScheduleDomainServiceInput,
+  ): string {
+    return JSON.stringify({
+      fixed_events: input.events.map((event) => ({
+        id: event.id,
+        start: event.startAt.toISOString(),
+        end: event.endAt.toISOString(),
+      })),
+
+      tasks: input.tasks.map((task) => ({
+        id: task.id,
+        duration_min: task.estimatedMinutes,
+        deadline: task.deadline.toISOString(),
+        priority: task.priority,
+      })),
+    });
+  }
+
+private parseOutputJson(
+  output: string,
+): GenerateScheduleResult[] {
+  const schedules = JSON.parse(output) as {
+    task: string;
+    start: string;
+    end: string;
+  }[];
+
+  return schedules.map((schedule) => ({
+    taskId: schedule.task,
+    startAt: new Date(schedule.start),
+    endAt: new Date(schedule.end),
+  }));
+}
+
+
+}
