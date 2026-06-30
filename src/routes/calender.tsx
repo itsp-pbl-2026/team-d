@@ -4,13 +4,12 @@ import { Schedule } from "@mantine/schedule";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { Plus } from "lucide-react";
-import { useMemo, useState } from "react";
-import {
-  getUpcomingEvents,
-  type UpcomingEventListItem,
-} from "#/features/upcomingEvent/api/api";
+import { useState } from "react";
+import { getUpcomingEvents } from "#/features/upcomingEvent/api/api";
 import { CreateEventModal } from "#/features/upcomingEvent/components/CreateEventModal";
 import { useCreateEventForm } from "#/features/upcomingEvent/hooks/useCreateEventForm";
+import { useEditEventForm } from "#/features/upcomingEvent/hooks/useEditEventForm";
+import { useEventsForSchedule } from "#/features/upcomingEvent/hooks/useEventsForSchedule";
 
 export const Route = createFileRoute("/calender")({
   loader: async () => {
@@ -22,38 +21,38 @@ export const Route = createFileRoute("/calender")({
 
 const today = dayjs().format("YYYY-MM-DD");
 
-const toEventData = (
-  event: UpcomingEventListItem,
-): ScheduleEventData<{ description: string }> => ({
-  id: event.id,
-  title: event.title,
-  payload: {
-    description: event.description,
-  },
-  start: event.startAt,
-  end: event.endAt,
-  color: "blue",
-});
-
 function CalenderPage() {
   const events = Route.useLoaderData();
-  const eventData = useMemo(() => events.map(toEventData), [events]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [view, setView] = useState<ScheduleViewLevel>("week");
 
   const {
-    opened: eventOpened,
-    open: openEvent,
-    close: handleEventClose,
-    data: eventFormData,
-    setData: setEventFormData,
+    opened: createEventOpened,
+    open: openCreateEvent,
+    close: handleCreateEventClose,
+    data: createEventFormData,
+    setData: setCreateEventFormData,
     submit: handleCreateEvent,
   } = useCreateEventForm();
+  const {
+    opened: eventEditOpened,
+    open: openEditEvent,
+    close: handleEditEventClose,
+    data: editEventFormData,
+    setData: setEditEventFormData,
+    submit: handleEditEvent,
+  } = useEditEventForm();
 
   // Derive a string format for the schedule component
   const scheduleDate = selectedDate
     ? dayjs(selectedDate).format("YYYY-MM-DD")
     : today;
+
+  const {
+    data: eventData,
+    onEventClick,
+    onEventDrop,
+  } = useEventsForSchedule({ source: events, openForm: openEditEvent });
 
   return (
     <Stack gap="lg" h="100%">
@@ -61,7 +60,7 @@ function CalenderPage() {
         <Button
           leftSection={<Plus size={16} />}
           color="indigo"
-          onClick={openEvent}
+          onClick={openCreateEvent}
         >
           Add Event
         </Button>
@@ -74,6 +73,9 @@ function CalenderPage() {
         view={view}
         onViewChange={setView}
         color="indigo"
+        withEventsDragAndDrop
+        onEventClick={onEventClick}
+        onEventDrop={onEventDrop}
         dayViewProps={{
           startTime: "09:00:00",
           endTime: "18:00:00",
@@ -103,11 +105,19 @@ function CalenderPage() {
       />
 
       <CreateEventModal
-        opened={eventOpened}
-        onClose={handleEventClose}
+        opened={createEventOpened}
+        onClose={handleCreateEventClose}
         onSubmit={handleCreateEvent}
-        data={eventFormData}
-        setData={setEventFormData}
+        data={createEventFormData}
+        setData={setCreateEventFormData}
+      />
+      <CreateEventModal
+        opened={eventEditOpened}
+        onClose={handleEditEventClose}
+        onSubmit={handleEditEvent}
+        data={editEventFormData}
+        setData={setEditEventFormData}
+        mode="edit"
       />
     </Stack>
   );

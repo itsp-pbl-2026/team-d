@@ -8,7 +8,7 @@ import { EditUpcomingEventService } from "../service/edit";
 import { GetUpcomingEventService } from "../service/get";
 
 export type UpcomingEventListItem = {
-  id: string;
+  id: UpcomingEventId;
   title: string;
   description: string;
   startAt: string;
