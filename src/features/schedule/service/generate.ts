@@ -16,7 +16,7 @@ const serializeTask = (
   id: task.getId(),
   title: task.getTitle(),
   description: task.getDescription(),
-  deadline: task.getDeadline().toISOString(),
+  deadline: task.getDeadline(),
   estimatedMinutes: task.getEstimatedMinutes(),
   actualMinutes: task.getActualMinutes(),
   priority: task.getPriority(),
@@ -26,12 +26,12 @@ const serializeTask = (
 
 const serializeUpcomingEvent = (
   upcomingEvent: UpcomingEvent,
-): GenerateScheduleDomainServiceInput["upcomingEvents"][number] => ({
+): GenerateScheduleDomainServiceInput["events"][number] => ({
   id: upcomingEvent.getId(),
   title: upcomingEvent.getTitle(),
   description: upcomingEvent.getDescription(),
-  startAt: upcomingEvent.getStartAt().toISOString(),
-  endAt: upcomingEvent.getEndAt().toISOString(),
+  startAt: upcomingEvent.getStartAt(),
+  endAt: upcomingEvent.getEndAt(),
 });
 
 export class GenerateScheduleService {
@@ -61,7 +61,7 @@ export class GenerateScheduleService {
     const generatedSchedules = await this.#generateScheduleDomainService.handle(
       {
         tasks: tasks.map(serializeTask),
-        upcomingEvents: upcomingEvents.map(serializeUpcomingEvent),
+        events: upcomingEvents.map(serializeUpcomingEvent),
       },
     );
 
@@ -77,9 +77,9 @@ export class GenerateScheduleService {
 
       return new Schedule(
         idGenerator.generate<Schedule>(),
-        generatedSchedule.title,
-        new Date(generatedSchedule.startAt),
-        new Date(generatedSchedule.endAt),
+        task.getTitle(),
+        generatedSchedule.startAt,
+        generatedSchedule.endAt,
         task,
       );
     });

@@ -118,9 +118,8 @@ describe("GenerateScheduleService", () => {
       mockedGenerateScheduleDomainService.handle.mockResolvedValue([
         {
           taskId: task.getId(),
-          title: "資料作成",
-          startAt: "2026-07-01T09:00:00.000Z",
-          endAt: "2026-07-01T10:30:00.000Z",
+          startAt: new Date("2026-07-01T09:00:00.000Z"),
+          endAt: new Date("2026-07-01T10:30:00.000Z"),
         },
       ]);
 
@@ -134,7 +133,7 @@ describe("GenerateScheduleService", () => {
             id: task.getId(),
             title: "資料作成",
             description: "週次定例の資料を作る",
-            deadline: "2026-07-02T09:00:00.000Z",
+            deadline: new Date("2026-07-02T09:00:00.000Z"),
             estimatedMinutes: 90,
             actualMinutes: 30,
             priority: 2,
@@ -142,13 +141,13 @@ describe("GenerateScheduleService", () => {
             status: "in_progress",
           },
         ],
-        upcomingEvents: [
+        events: [
           {
             id: upcomingEvent.getId(),
             title: "定例会議",
             description: "毎週の定例会議",
-            startAt: "2026-07-01T15:00:00.000Z",
-            endAt: "2026-07-01T16:00:00.000Z",
+            startAt: new Date("2026-07-01T15:00:00.000Z"),
+            endAt: new Date("2026-07-01T16:00:00.000Z"),
           },
         ],
       });
@@ -178,9 +177,8 @@ describe("GenerateScheduleService", () => {
       mockedGenerateScheduleDomainService.handle.mockResolvedValue([
         {
           taskId: "unknown-task-id",
-          title: "資料作成",
-          startAt: "2026-07-01T09:00:00.000Z",
-          endAt: "2026-07-01T10:30:00.000Z",
+          startAt: new Date("2026-07-01T09:00:00.000Z"),
+          endAt: new Date("2026-07-01T10:30:00.000Z"),
         },
       ]);
 

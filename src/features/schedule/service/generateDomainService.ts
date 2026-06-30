@@ -2,7 +2,7 @@ export type GenerateScheduleTask = {
   id: string;
   title: string;
   description: string;
-  deadline: string;
+  deadline: Date;
   estimatedMinutes: number;
   actualMinutes: number;
   priority: number;
@@ -10,24 +10,23 @@ export type GenerateScheduleTask = {
   status: string;
 };
 
-export type GenerateScheduleUpcomingEvent = {
+export type GenerateScheduleEvent = {
   id: string;
   title: string;
   description: string;
-  startAt: string;
-  endAt: string;
+  startAt: Date;
+  endAt: Date;
 };
 
 export type GenerateScheduleDomainServiceInput = {
   tasks: GenerateScheduleTask[];
-  upcomingEvents: GenerateScheduleUpcomingEvent[];
+  events: GenerateScheduleEvent[];
 };
 
 export type GenerateScheduleResult = {
   taskId: string;
-  title: string;
-  startAt: string;
-  endAt: string;
+  startAt: Date;
+  endAt: Date;
 };
 
 export interface GenerateScheduleDomainService {
