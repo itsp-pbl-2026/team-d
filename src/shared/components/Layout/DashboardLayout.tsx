@@ -1,10 +1,11 @@
 import {
-  ActionIcon,
   AppShell,
+  Box,
   Group,
   NavLink,
   Stack,
   Text,
+  ThemeIcon,
   Title,
 } from "@mantine/core";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
@@ -12,13 +13,12 @@ import {
   Calendar as CalendarIcon,
   CheckSquare,
   Home,
-  LogOut,
   Zap,
 } from "lucide-react";
 
 const NAV_LINKS = [
   { icon: Home, label: "Home", to: "/" },
-  { icon: CalendarIcon, label: "Schedule", to: "/schedule" },
+  { icon: CalendarIcon, label: "Calender", to: "/calender" },
   { icon: CheckSquare, label: "Tasks", to: "/tasks" },
 ];
 
@@ -31,74 +31,42 @@ export function DashboardLayout() {
       layout="alt"
       navbar={{
         width: 250,
-        breakpoint: "sm",
+        breakpoint: "xs",
       }}
       padding="lg"
       bg="gray.0"
     >
-      <AppShell.Navbar
-        p="md"
-        withBorder
-        style={{ borderRight: "1px solid var(--mantine-color-gray-2)" }}
-      >
+      <AppShell.Navbar p="md" withBorder>
         <Group mb="xl" mt="xs" px="sm">
-          <ActionIcon variant="filled" color="indigo.9" radius="md" size="lg">
+          <ThemeIcon variant="filled" color="indigo.9" size="lg">
             <Zap size={20} />
-          </ActionIcon>
-          <div>
+          </ThemeIcon>
+          <Box>
             <Title order={4} c="indigo.9" style={{ lineHeight: 1.2 }}>
               FocusFlow
             </Title>
             <Text size="xs" c="dimmed">
               Productivity Engine
             </Text>
-          </div>
+          </Box>
         </Group>
 
         <AppShell.Section grow>
           <Stack gap="xs">
-            {NAV_LINKS.map((link) => {
-              // Special case: /calendar corresponds to "Schedule" in the mockup
-              const isActive = currentPath === link.to;
-              return (
-                <NavLink
-                  key={link.to}
-                  component={Link}
-                  to={link.to}
-                  label={<Text fw={isActive ? 600 : 500}>{link.label}</Text>}
-                  leftSection={
-                    <link.icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                  }
-                  active={isActive}
-                  variant="filled"
-                  color="indigo.0"
-                  c={isActive ? "indigo.9" : "gray.7"}
-                  style={{
-                    borderRadius: 8,
-                    padding: "10px 12px",
-                    color: isActive
-                      ? "var(--mantine-color-indigo-9)"
-                      : undefined,
-                  }}
-                />
-              );
-            })}
-          </Stack>
-        </AppShell.Section>
-
-        <AppShell.Section>
-          <Stack
-            gap="xs"
-            pt="md"
-            pb="xs"
-            style={{ borderTop: "1px solid var(--mantine-color-gray-2)" }}
-          >
-            <NavLink
-              label={<Text fw={500}>Logout</Text>}
-              leftSection={<LogOut size={20} />}
-              c="gray.7"
-              style={{ borderRadius: 8, padding: "10px 12px" }}
-            />
+            {NAV_LINKS.map((link) => (
+              <NavLink
+                key={link.to}
+                component={Link}
+                to={link.to}
+                label={<Text fw={600}>{link.label}</Text>}
+                leftSection={<link.icon size={20} />}
+                active={currentPath === link.to}
+                variant="light"
+                color="indigo"
+                bdrs="0.5rem"
+                p="10px 12px"
+              />
+            ))}
           </Stack>
         </AppShell.Section>
       </AppShell.Navbar>
