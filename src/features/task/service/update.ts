@@ -29,8 +29,12 @@ export class UpdateTaskService {
       data.title !== undefined ? data.title : task.getTitle(),
       data.description !== undefined ? data.description : task.getDescription(),
       data.deadline !== undefined ? data.deadline : task.getDeadline(),
-      data.estimatedMinutes !== undefined ? data.estimatedMinutes : task.getEstimatedMinutes(),
-      data.actualMinutes !== undefined ? data.actualMinutes : task.getActualMinutes(),
+      data.estimatedMinutes !== undefined
+        ? data.estimatedMinutes
+        : task.getEstimatedMinutes(),
+      data.actualMinutes !== undefined
+        ? data.actualMinutes
+        : task.getActualMinutes(),
       data.priority !== undefined ? data.priority : task.getPriority(),
       data.progress !== undefined ? data.progress : task.getProgress(),
       data.status !== undefined ? data.status : task.getStatus(),

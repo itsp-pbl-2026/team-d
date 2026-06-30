@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   ActionIcon,
   Badge,
@@ -15,8 +14,8 @@ import {
   Slider,
   Stack,
   Text,
-  TextInput,
   Textarea,
+  TextInput,
   Title,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
@@ -34,12 +33,13 @@ import {
   RotateCcw,
   Trash2,
 } from "lucide-react";
+import { useState } from "react";
 import {
   createTask,
   deleteTask,
   getTasks,
-  updateTask,
   type TaskListItem,
+  updateTask,
 } from "#/features/task/api/api";
 
 export const Route = createFileRoute("/tasks")({
@@ -127,9 +127,11 @@ function IncompleteTaskCard({
   onPostpone: (id: string, days: number) => void;
   onClick: () => void;
 }) {
-  const { text: deadlineText, isOverdue, isToday } = formatDeadline(
-    task.deadline,
-  );
+  const {
+    text: deadlineText,
+    isOverdue,
+    isToday,
+  } = formatDeadline(task.deadline);
   const isHighPriority = task.priority >= 4;
   const progressColor =
     task.progress >= 60 ? "indigo" : task.progress >= 30 ? "blue" : "gray";
@@ -147,23 +149,29 @@ function IncompleteTaskCard({
         cursor: "pointer",
         transition: "all 0.2s ease",
         boxShadow: "0 2px 8px rgba(12,27,84,0.05)",
-        borderLeft: isHighPriority ? "4px solid var(--mantine-color-red-6)" : undefined,
+        borderLeft: isHighPriority
+          ? "4px solid var(--mantine-color-red-6)"
+          : undefined,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 4px 12px rgba(12,27,84,0.08)";
+        e.currentTarget.style.boxShadow = "0 4px 12px rgba(12,27,84,0.08)";
         e.currentTarget.style.borderColor = "var(--mantine-color-gray-3)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow =
-          "0 2px 8px rgba(12,27,84,0.05)";
+        e.currentTarget.style.boxShadow = "0 2px 8px rgba(12,27,84,0.05)";
         e.currentTarget.style.borderColor = "transparent";
       }}
     >
       <Group justify="space-between" align="flex-start" mb={4}>
         <Stack gap={4} style={{ flex: 1 }}>
           <Group gap="xs" align="center">
-            <Rating readOnly value={task.priority} count={5} size="xs" color="yellow" />
+            <Rating
+              readOnly
+              value={task.priority}
+              count={5}
+              size="xs"
+              color="yellow"
+            />
             {task.description && (
               <Text size="xs" c="dimmed" fw={500}>
                 {task.description}
@@ -314,35 +322,36 @@ function CompletedTaskCard({
             flexShrink: 0,
           }}
         >
-          <Check size={14} color="var(--mantine-color-indigo-7)" strokeWidth={3} />
+          <Check
+            size={14}
+            color="var(--mantine-color-indigo-7)"
+            strokeWidth={3}
+          />
         </Box>
 
         <Stack gap={4} style={{ flex: 1 }}>
           <Group gap="xs" align="center">
-            <Rating readOnly value={task.priority} count={5} size="xs" color="gray" />
+            <Rating
+              readOnly
+              value={task.priority}
+              count={5}
+              size="xs"
+              color="gray"
+            />
             {task.description && (
               <Text size="xs" c="gray.5" fw={500} td="line-through">
                 {task.description}
               </Text>
             )}
           </Group>
-          <Text
-            fw={600}
-            size="md"
-            c="gray.5"
-            td="line-through"
-            mt={2}
-          >
+          <Text fw={600} size="md" c="gray.5" td="line-through" mt={2}>
             {task.title}
           </Text>
         </Stack>
       </Group>
 
       <Group gap={6} mt="xs" pl={36}>
-        <Check
-          size={14}
-          color="var(--mantine-color-gray-5)"
-        />
+        <Check size={14} color="var(--mantine-color-gray-5)" />
         <Text size="xs" fw={500} c="gray.5">
           {formatCompletedDate(task.deadline)}
         </Text>
@@ -366,9 +375,15 @@ function TasksPage() {
 
   // Filter states
   const [filterTitle, setFilterTitle] = useState("");
-  const [filterMinPriority, setFilterMinPriority] = useState<number | null>(null);
-  const [filterMaxPriority, setFilterMaxPriority] = useState<number | null>(null);
-  const [filterDeadlineStart, setFilterDeadlineStart] = useState<Date | null>(null);
+  const [filterMinPriority, setFilterMinPriority] = useState<number | null>(
+    null,
+  );
+  const [filterMaxPriority, setFilterMaxPriority] = useState<number | null>(
+    null,
+  );
+  const [filterDeadlineStart, setFilterDeadlineStart] = useState<Date | null>(
+    null,
+  );
   const [filterDeadlineEnd, setFilterDeadlineEnd] = useState<Date | null>(null);
 
   // Sort state
@@ -692,8 +707,12 @@ function TasksPage() {
     });
   };
 
-  const sortedIncompleteTasks = sortTasks(filteredTasks.filter((t) => t.status !== "done"));
-  const sortedCompletedTasks = sortTasks(filteredTasks.filter((t) => t.status === "done"));
+  const sortedIncompleteTasks = sortTasks(
+    filteredTasks.filter((t) => t.status !== "done"),
+  );
+  const sortedCompletedTasks = sortTasks(
+    filteredTasks.filter((t) => t.status === "done"),
+  );
 
   const isAnyFilterActive =
     filterTitle.trim() !== "" ||
@@ -724,9 +743,22 @@ function TasksPage() {
       </Group>
 
       {/* Two Column Layout */}
-      <Group grow align="stretch" wrap="nowrap" gap="lg" style={{ flex: 1, minHeight: 0 }}>
+      <Group
+        grow
+        align="stretch"
+        wrap="nowrap"
+        gap="lg"
+        style={{ flex: 1, minHeight: 0 }}
+      >
         {/* Incomplete Column */}
-        <Box style={{ height: "100%", display: "flex", flexDirection: "column", minHeight: 0 }}>
+        <Box
+          style={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            minHeight: 0,
+          }}
+        >
           <Stack gap="md" style={{ height: "100%", minHeight: 0 }}>
             <Group
               justify="space-between"
@@ -825,7 +857,9 @@ function TasksPage() {
               {sortedIncompleteTasks.length === 0 ? (
                 <Card padding="xl" radius="md" bg="gray.0">
                   <Text ta="center" c="dimmed" fs="italic">
-                    {isAnyFilterActive ? "No matching incomplete tasks." : "All tasks are completed! 🎉"}
+                    {isAnyFilterActive
+                      ? "No matching incomplete tasks."
+                      : "All tasks are completed! 🎉"}
                   </Text>
                 </Card>
               ) : (
@@ -847,7 +881,14 @@ function TasksPage() {
         </Box>
 
         {/* Completed Column */}
-        <Box style={{ height: "100%", display: "flex", flexDirection: "column", minHeight: 0 }}>
+        <Box
+          style={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            minHeight: 0,
+          }}
+        >
           <Stack gap="md" style={{ height: "100%", minHeight: 0 }}>
             <Group
               justify="space-between"
@@ -922,7 +963,9 @@ function TasksPage() {
               {sortedCompletedTasks.length === 0 ? (
                 <Card padding="xl" radius="md" bg="gray.0">
                   <Text ta="center" c="dimmed" fs="italic">
-                    {isAnyFilterActive ? "No matching completed tasks." : "No completed tasks yet."}
+                    {isAnyFilterActive
+                      ? "No matching completed tasks."
+                      : "No completed tasks yet."}
                   </Text>
                 </Card>
               ) : (
@@ -1152,8 +1195,8 @@ function TasksPage() {
                             newProgress === 100
                               ? "done"
                               : prev.status === "done"
-                              ? "pending"
-                              : prev.status,
+                                ? "pending"
+                                : prev.status,
                         };
                       })
                     }
@@ -1174,25 +1217,51 @@ function TasksPage() {
                   <Group>
                     <Button
                       size="xs"
-                      variant={editFormData.status === "pending" ? "filled" : "outline"}
+                      variant={
+                        editFormData.status === "pending" ? "filled" : "outline"
+                      }
                       color="gray"
-                      onClick={() => setEditFormData((prev) => ({ ...prev, status: "pending", progress: prev.progress === 100 ? 0 : prev.progress }))}
+                      onClick={() =>
+                        setEditFormData((prev) => ({
+                          ...prev,
+                          status: "pending",
+                          progress: prev.progress === 100 ? 0 : prev.progress,
+                        }))
+                      }
                     >
                       Pending
                     </Button>
                     <Button
                       size="xs"
-                      variant={editFormData.status === "in_progress" ? "filled" : "outline"}
+                      variant={
+                        editFormData.status === "in_progress"
+                          ? "filled"
+                          : "outline"
+                      }
                       color="blue"
-                      onClick={() => setEditFormData((prev) => ({ ...prev, status: "in_progress", progress: prev.progress === 100 ? 50 : prev.progress }))}
+                      onClick={() =>
+                        setEditFormData((prev) => ({
+                          ...prev,
+                          status: "in_progress",
+                          progress: prev.progress === 100 ? 50 : prev.progress,
+                        }))
+                      }
                     >
                       In Progress
                     </Button>
                     <Button
                       size="xs"
-                      variant={editFormData.status === "done" ? "filled" : "outline"}
+                      variant={
+                        editFormData.status === "done" ? "filled" : "outline"
+                      }
                       color="indigo"
-                      onClick={() => setEditFormData((prev) => ({ ...prev, status: "done", progress: 100 }))}
+                      onClick={() =>
+                        setEditFormData((prev) => ({
+                          ...prev,
+                          status: "done",
+                          progress: 100,
+                        }))
+                      }
                     >
                       Completed
                     </Button>
@@ -1246,14 +1315,16 @@ function TasksPage() {
                 value={filterTitle}
                 onChange={(e) => setFilterTitle(e.currentTarget.value)}
               />
-              
+
               <Box>
                 <Text size="sm" fw={500} mb={4}>
                   Priority Level Range
                 </Text>
                 <Group gap="lg">
                   <Stack gap={2}>
-                    <Text size="xs" c="dimmed">Min Priority</Text>
+                    <Text size="xs" c="dimmed">
+                      Min Priority
+                    </Text>
                     <Rating
                       size="md"
                       count={5}
@@ -1262,7 +1333,9 @@ function TasksPage() {
                     />
                   </Stack>
                   <Stack gap={2}>
-                    <Text size="xs" c="dimmed">Max Priority</Text>
+                    <Text size="xs" c="dimmed">
+                      Max Priority
+                    </Text>
                     <Rating
                       size="md"
                       count={5}
@@ -1278,14 +1351,18 @@ function TasksPage() {
                   label="Deadline From"
                   placeholder="Select start date/time"
                   value={filterDeadlineStart}
-                  onChange={(val) => setFilterDeadlineStart(val ? new Date(val) : null)}
+                  onChange={(val) =>
+                    setFilterDeadlineStart(val ? new Date(val) : null)
+                  }
                   clearable
                 />
                 <DateTimePicker
                   label="Deadline To"
                   placeholder="Select end date/time"
                   value={filterDeadlineEnd}
-                  onChange={(val) => setFilterDeadlineEnd(val ? new Date(val) : null)}
+                  onChange={(val) =>
+                    setFilterDeadlineEnd(val ? new Date(val) : null)
+                  }
                   clearable
                 />
               </Group>

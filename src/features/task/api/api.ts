@@ -1,11 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { drizzleClient } from "#/db/drizzleClient";
-import { Task } from "../model/task";
+import type { Task } from "../model/task";
 import { TaskDrizzleRepository } from "../repository/taskDrizzle";
 import { CreateTaskService } from "../service/create";
+import { DeleteTaskService } from "../service/delete";
 import { GetTaskService } from "../service/get";
 import { UpdateTaskService } from "../service/update";
-import { DeleteTaskService } from "../service/delete";
 
 export type TaskListItem = {
   id: string;
@@ -82,7 +82,8 @@ export const updateTask = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<TaskListItem> => {
     const updated = await updateService.handle({
       ...data,
-      deadline: data.deadline !== undefined ? new Date(data.deadline) : undefined,
+      deadline:
+        data.deadline !== undefined ? new Date(data.deadline) : undefined,
     });
     return serializeTask(updated);
   });

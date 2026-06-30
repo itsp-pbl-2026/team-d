@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { type TaskId } from "../model/task";
+import type { TaskId } from "../model/task";
 import type { TaskRepository } from "../repository/task";
 import { DeleteTaskService } from "./delete";
 
@@ -24,6 +24,8 @@ describe("DeleteTaskService", () => {
 
     await service.handle("task-1");
 
-    expect(mockedTaskRepository.delete).toHaveBeenCalledWith("task-1" as TaskId);
+    expect(mockedTaskRepository.delete).toHaveBeenCalledWith(
+      "task-1" as TaskId,
+    );
   });
 });

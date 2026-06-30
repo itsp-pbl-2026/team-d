@@ -1,4 +1,4 @@
-import { type TaskId } from "../model/task";
+import type { TaskId } from "../model/task";
 import type { TaskRepository } from "../repository/task";
 
 export class DeleteTaskService {

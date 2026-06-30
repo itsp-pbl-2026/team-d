@@ -29,7 +29,7 @@ describe("UpdateTaskService", () => {
       0,
       1,
       0,
-      "pending"
+      "pending",
     );
 
     mockedTaskRepository.findById.mockResolvedValue(existingTask);
