@@ -10,7 +10,10 @@ import {
 import { DateTimePicker } from "@mantine/dates";
 import { Calendar } from "lucide-react";
 import { type Dispatch, type SetStateAction, useState } from "react";
-import type { EventFormData, EventFormDataValidated } from "../hooks/eventForm";
+import type {
+  EventFormData,
+  EventFormDataValidated,
+} from "../hooks/useEventFormData";
 
 export type CreateEventFormError = {
   title: string;

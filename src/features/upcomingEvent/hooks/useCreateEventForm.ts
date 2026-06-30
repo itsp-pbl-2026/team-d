@@ -1,17 +1,16 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { createUpcomingEvent } from "../api/api";
 import {
-  createEmptyEventFormData,
-  type EventFormData,
   type EventFormDataValidated,
-} from "./eventForm";
+  useEventFormData,
+} from "./useEventFormData";
 
 export const useCreateEventForm = () => {
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
-  const [data, setData] = useState<EventFormData>(createEmptyEventFormData());
+  const { data, setData, reset } = useEventFormData();
 
   const submit = useCallback(
     async (data: EventFormDataValidated) => {
@@ -27,12 +26,12 @@ export const useCreateEventForm = () => {
 
         router.invalidate();
         close();
-        setData(createEmptyEventFormData());
+        reset();
       } catch (error) {
         console.error("Failed to create event", error);
       }
     },
-    [router, close],
+    [router, close, reset],
   );
 
   return {
