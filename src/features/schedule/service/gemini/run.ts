@@ -1,17 +1,25 @@
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { config as loadDotenv } from "dotenv";
 import { loadTestCase, runGeminiSchedulingEval } from "./runner";
 
 // 実行方法:
 //   cd team-d
-//   GEMINI_API_KEY=... pnpm tsx src/features/schedule/service/gemini/run.ts
-// (GEMINI_API_KEY を指定しなければ apikey.txt から自動で読む。詳細は apiKey.ts 参照)
+//   pnpm tsx src/features/schedule/service/gemini/run.ts
+// (.env.local の GEMINI_API_KEY を自動で読む。無ければ apikey.txt から読む。詳細は apiKey.ts 参照)
 //
 // テストケースを指定する場合:
 //   pnpm tsx src/features/schedule/service/gemini/run.ts path/to/testcase.json
 
 const here = path.dirname(fileURLToPath(import.meta.url));
+
+// Vite経由(dev/build)では自動で .env.local が読まれるが、tsx単体実行では読まれないため明示的に読み込む。
+loadDotenv({
+  path: path.resolve(here, "../../../../../.env.local"),
+  quiet: true,
+});
+
 const testCasePath = process.argv[2] ?? path.join(here, "testCases/basic.json");
 
 const main = async () => {
