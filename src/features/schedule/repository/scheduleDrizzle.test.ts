@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import type { SQLiteInsertValue } from "drizzle-orm/sqlite-core";
 import { assert, describe, expect, test } from "vitest";
@@ -86,7 +87,7 @@ const insertScheduleFromModel = (db: DrizzleClient, scheduleModel: Schedule) =>
 const it = test.extend<{
   db: DrizzleClient;
 }>({
-  // biome-ignore lint/correctness/noEmptyPattern: fixture関数の第1引数は分割代入パターンでなくてはならないため
+  // biome-ignore lint/correctness/noEmptyPattern: fixture関数の第1引数は�?割代入パターンでなくてはならな�?ため
   db: async ({}, use) => {
     const testDrizzleClient = createTestDrizzleClient();
     migrate(testDrizzleClient, { migrationsFolder: "./drizzle" });
@@ -129,7 +130,7 @@ describe("ScheduleDrizzleRepository", () => {
       expect(result.getTask().getTitle()).toBe("task title");
     });
 
-    it("存在しないidではundefinedになる", async ({ db }) => {
+    it("存在しな�?idではundefinedにな�?", async ({ db }) => {
       const repository = new ScheduleDrizzleRepository(db);
       const result = await repository.findById("" as ScheduleId);
 
@@ -260,6 +261,26 @@ describe("ScheduleDrizzleRepository", () => {
       await expect(repository.delete("" as ScheduleId)).resolves.toBe(
         undefined,
       );
+    });
+  });
+  describe("Task削除時のカスケード削除", () => {
+    it("Taskを削除すると、紐づいているScheduleも一緒に削除される", async ({
+      db,
+    }) => {
+      // 1. TaskとScheduleをデータベースに入れる
+      const taskModel = createTask();
+      const scheduleModel = createSchedule({ task: taskModel });
+      await insertTaskFromModel(db, taskModel);
+      await insertScheduleFromModel(db, scheduleModel);
+
+      // 2. Taskを削除する
+      await db.delete(task).where(eq(task.id, taskModel.getId()));
+
+      // 3. Scheduleも消えているか確認する
+      const repository = new ScheduleDrizzleRepository(db);
+      const deletedSchedule = await repository.findById(scheduleModel.getId());
+
+      expect(deletedSchedule).toBeUndefined();
     });
   });
 });
