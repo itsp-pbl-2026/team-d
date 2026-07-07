@@ -4,7 +4,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { Grid2X2PlusIcon } from "lucide-react";
 import { useMemo } from "react";
-import { generateSchedules, getSchedules } from "#/features/schedule/api/api";
+import { getSchedules } from "#/features/schedule/api/api";
+import { useGenerateSchedule } from "#/features/schedule/hooks/useGenerateSchedule";
 import { useSchedulesForSchedule } from "#/features/schedule/hooks/useSchedulesForSchedule";
 import { getUpcomingEvents } from "#/features/upcomingEvent/api/api";
 import { useEventsForSchedule } from "#/features/upcomingEvent/hooks/useEventsForSchedule";
@@ -45,6 +46,7 @@ function SchedulePage() {
     () => [...eventData, ...scheduleData],
     [eventData, scheduleData],
   );
+  const { generate } = useGenerateSchedule();
 
   return (
     <Stack gap="lg" h="100%">
@@ -52,9 +54,7 @@ function SchedulePage() {
         <Button
           leftSection={<Grid2X2PlusIcon size={16} />}
           color="indigo"
-          onClick={async () => {
-            await generateSchedules();
-          }}
+          onClick={generate}
         >
           {schedules.length === 0 ? "Generate Schedule" : "Regenerate Schedule"}
         </Button>
