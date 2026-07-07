@@ -13,9 +13,10 @@ import {
   Title,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
+import type { TaskId } from "../model/task";
 
 export interface EditTaskFormData {
-  id: string;
+  id: TaskId;
   title: string;
   description: string;
   deadline: Date | null;

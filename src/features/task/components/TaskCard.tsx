@@ -11,8 +11,9 @@ import {
 } from "@mantine/core";
 import { Calendar, Check, Clock, MoreHorizontal, Trash2 } from "lucide-react";
 import type { TaskListItem } from "../api/api";
+import type { TaskId } from "../model/task";
 import {
-  formatCompletedDate,
+  formatCompletedDeadline,
   formatDeadline,
   formatEstimatedTime,
 } from "../utils/format";
@@ -25,9 +26,9 @@ export const IncompleteTaskCard = ({
   onClick,
 }: {
   task: TaskListItem;
-  onComplete: (id: string) => void;
-  onDelete: (id: string) => void;
-  onPostpone: (id: string, days: number) => void;
+  onComplete: (id: TaskId) => void;
+  onDelete: (id: TaskId) => void;
+  onPostpone: (id: TaskId, days: number) => void;
   onClick: () => void;
 }) => {
   const {
@@ -256,7 +257,7 @@ export const CompletedTaskCard = ({
       <Group gap={6} mt="xs" pl={36}>
         <Check size={14} color="var(--mantine-color-gray-5)" />
         <Text size="xs" fw={500} c="gray.5">
-          {formatCompletedDate(task.deadline)}
+          {formatCompletedDeadline(task.deadline)}
         </Text>
       </Group>
     </Card>

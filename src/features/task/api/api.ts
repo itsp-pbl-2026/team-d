@@ -8,7 +8,7 @@ import { GetTaskService } from "../service/get";
 import { UpdateTaskService } from "../service/update";
 
 export type TaskListItem = {
-  id: string;
+  id: TaskId;
   title: string;
   description: string;
   deadline: string;
@@ -68,7 +68,7 @@ export const createTask = createServerFn({ method: "POST" })
 export const updateTask = createServerFn({ method: "POST" })
   .inputValidator(
     (data: {
-      id: string;
+      id: TaskId;
       title?: string;
       description?: string;
       deadline?: string | Date;
@@ -82,7 +82,7 @@ export const updateTask = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<TaskListItem> => {
     const updated = await updateService.handle({
       ...data,
-      id: data.id as TaskId,
+      id: data.id,
       deadline:
         data.deadline !== undefined ? new Date(data.deadline) : undefined,
     });
@@ -90,7 +90,7 @@ export const updateTask = createServerFn({ method: "POST" })
   });
 
 export const deleteTask = createServerFn({ method: "POST" })
-  .inputValidator((data: { id: string }) => data)
+  .inputValidator((data: { id: TaskId }) => data)
   .handler(async ({ data }): Promise<void> => {
-    await deleteService.handle(data.id as TaskId);
+    await deleteService.handle(data.id);
   });

@@ -9,6 +9,7 @@ import {
 } from "../api/api";
 import type { CreateTaskFormData } from "../components/CreateTaskModal";
 import type { EditTaskFormData } from "../components/EditTaskModal";
+import type { TaskId } from "../model/task";
 import { formatDeadline } from "../utils/format";
 
 export const useTaskMutations = (tasks: TaskListItem[]) => {
@@ -32,7 +33,7 @@ export const useTaskMutations = (tasks: TaskListItem[]) => {
   // Edit states
   const [editingTask, setEditingTask] = useState<TaskListItem | null>(null);
   const [editFormData, setEditFormData] = useState<EditTaskFormData>({
-    id: "",
+    id: "" as TaskId,
     title: "",
     description: "",
     deadline: null,
@@ -82,7 +83,7 @@ export const useTaskMutations = (tasks: TaskListItem[]) => {
     }
   };
 
-  const handleComplete = async (id: string) => {
+  const handleComplete = async (id: TaskId) => {
     try {
       await updateTask({
         data: { id, status: "done", progress: 100 },
@@ -93,7 +94,7 @@ export const useTaskMutations = (tasks: TaskListItem[]) => {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: TaskId) => {
     try {
       await deleteTask({ data: { id } });
       router.invalidate();
@@ -160,7 +161,7 @@ export const useTaskMutations = (tasks: TaskListItem[]) => {
     }
   };
 
-  const handlePostpone = async (id: string, days: number) => {
+  const handlePostpone = async (id: TaskId, days: number) => {
     try {
       const task = tasks.find((t) => t.id === id);
       if (!task) return;

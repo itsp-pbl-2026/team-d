@@ -46,10 +46,12 @@ export const formatEstimatedTime = (minutes: number): string => {
   return `${hours}h ${mins.toString().padStart(2, "0")}m`;
 };
 
-export const formatCompletedDate = (deadline: Date | string): string => {
+export const formatCompletedDeadline = (deadline: Date | string): string => {
   const deadlineDate = new Date(deadline);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
   const dateOnly = new Date(
@@ -63,10 +65,13 @@ export const formatCompletedDate = (deadline: Date | string): string => {
       hour: "2-digit",
       minute: "2-digit",
     });
-    return `Completed Today, ${timeStr}`;
+    return `Deadline: Today, ${timeStr}`;
+  }
+  if (dateOnly.getTime() === tomorrow.getTime()) {
+    return "Deadline: Tomorrow";
   }
   if (dateOnly.getTime() === yesterday.getTime()) {
-    return "Completed Yesterday";
+    return "Deadline: Yesterday";
   }
-  return `Completed ${deadlineDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
+  return `Deadline: ${deadlineDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
 };
