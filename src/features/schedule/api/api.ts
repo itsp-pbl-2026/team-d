@@ -35,3 +35,9 @@ export const getSchedules = createServerFn({ method: "GET" }).handler(
     });
   },
 );
+
+export const generateSchedules = createServerFn({ method: "POST" }).handler(
+  async () => {
+    throw new Error("not implemented yet.");
+  },
+);
