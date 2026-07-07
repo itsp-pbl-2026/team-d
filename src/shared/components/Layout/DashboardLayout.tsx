@@ -11,7 +11,7 @@ import {
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import {
   CalendarIcon,
-    CheckSquare,
+  CheckSquare,
   HomeIcon,
   NotebookTabsIcon,
   ZapIcon,
