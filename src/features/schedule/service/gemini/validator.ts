@@ -68,7 +68,7 @@ export const validateSchedule = (
     dayjs(b.start),
     dayjs(b.end),
   ]);
-  const fixed: [Dayjs, Dayjs, string][] = testCase.fixedEvents.map((e) => [
+  const fixed: [Dayjs, Dayjs, string][] = testCase.events.map((e) => [
     dayjs(e.start),
     dayjs(e.end),
     e.title,

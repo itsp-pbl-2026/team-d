@@ -40,7 +40,7 @@ export const loadTestCase = (filePath: string): TestCase => {
   return {
     name: raw.name,
     workingHours: raw.working_hours,
-    fixedEvents: raw.fixed_events,
+    events: raw.fixed_events,
     blockedTimes: raw.blocked_times ?? [],
     tasks: raw.tasks.map((t) => ({
       title: t.title,

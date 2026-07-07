@@ -2,7 +2,8 @@
 // Qwen での検証結果とスコアを直接比較できるようにするため、
 // 実プロダクトの Task/UpcomingEvent モデルとは独立させている。
 
-export type FixedEvent = {
+// 命名は実プロダクトの GenerateScheduleEvent/events (generateDomainService.ts) に合わせている。
+export type ScheduleEvent = {
   title: string;
   start: string;
   end: string;
@@ -18,8 +19,8 @@ export type TaskSpec = {
 export type TestCase = {
   name: string;
   workingHours: [string, string][];
-  fixedEvents: FixedEvent[];
-  blockedTimes: FixedEvent[];
+  events: ScheduleEvent[];
+  blockedTimes: ScheduleEvent[];
   tasks: TaskSpec[];
 };
 

@@ -1,5 +1,5 @@
 import dayjs, { type Dayjs } from "dayjs";
-import type { FixedEvent, FreeSlot, TestCase } from "./types";
+import type { FreeSlot, ScheduleEvent, TestCase } from "./types";
 
 // LLM技術検証(Python schedule_tools.py の compute_free_slots)と同じロジック。
 // 稼働可能時間から固定予定・blockedTimes を前後15分マージン込みで差し引く。
@@ -31,7 +31,7 @@ const overlaps = (
 export const computeFreeSlots = (
   testCase: Pick<
     TestCase,
-    "workingHours" | "fixedEvents" | "blockedTimes" | "tasks"
+    "workingHours" | "events" | "blockedTimes" | "tasks"
   >,
   gapMin: number = GAP_MIN,
 ): FreeSlot[] => {
@@ -40,7 +40,7 @@ export const computeFreeSlots = (
       ? testCase.workingHours
       : DEFAULT_WORKING_HOURS;
   const busy: [Dayjs, Dayjs][] = [
-    ...testCase.fixedEvents.map((e): [Dayjs, Dayjs] => [
+    ...testCase.events.map((e): [Dayjs, Dayjs] => [
       dayjs(e.start),
       dayjs(e.end),
     ]),
@@ -104,4 +104,4 @@ export const computeFreeSlots = (
   return slots;
 };
 
-export type { FixedEvent };
+export type { ScheduleEvent };

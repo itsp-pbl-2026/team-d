@@ -80,7 +80,7 @@ describe("GeminiGenerateScheduleDomainService", () => {
             priority: 2,
           }),
         ],
-        fixedEvents: [
+        events: [
           expect.objectContaining({
             title: "定例会議",
             start: "2026-07-01T15:00:00",
@@ -157,41 +157,73 @@ describe("GeminiGenerateScheduleDomainService", () => {
     );
   });
 
-  it("タスクタイトルが重複しているとエラーにする", async () => {
+  it("タスクタイトルが重複していても別名(エイリアス)を付けてrunnerに渡し、結果を正しい元タスクに戻す", async () => {
+    runGeminiSchedulingEvalMock.mockResolvedValue(
+      buildEvalResult({
+        schedule: [
+          { task: "同名タスク", start: "2026-07-01T09:00:00", durationMin: 30 },
+          {
+            task: "同名タスク (2)",
+            start: "2026-07-02T09:00:00",
+            durationMin: 30,
+          },
+        ],
+      }),
+    );
     const service = new GeminiGenerateScheduleDomainService();
 
-    await expect(
-      service.handle(
-        buildInput({
-          tasks: [
-            {
-              id: "task-1",
-              title: "同名タスク",
-              description: "",
-              deadline: new Date("2026-07-02T09:00:00"),
-              estimatedMinutes: 60,
-              actualMinutes: 0,
-              priority: 1,
-              progress: 0,
-              status: "pending",
-            },
-            {
-              id: "task-2",
-              title: "同名タスク",
-              description: "",
-              deadline: new Date("2026-07-03T09:00:00"),
-              estimatedMinutes: 60,
-              actualMinutes: 0,
-              priority: 1,
-              progress: 0,
-              status: "pending",
-            },
-          ],
-        }),
-      ),
-    ).rejects.toThrow(
-      "タスク名が重複しているため対応付けできません: 同名タスク",
+    const results = await service.handle(
+      buildInput({
+        tasks: [
+          {
+            id: "task-1",
+            title: "同名タスク",
+            description: "",
+            deadline: new Date("2026-07-02T09:00:00"),
+            estimatedMinutes: 60,
+            actualMinutes: 0,
+            priority: 1,
+            progress: 0,
+            status: "pending",
+          },
+          {
+            id: "task-2",
+            title: "同名タスク",
+            description: "",
+            deadline: new Date("2026-07-03T09:00:00"),
+            estimatedMinutes: 60,
+            actualMinutes: 0,
+            priority: 1,
+            progress: 0,
+            status: "pending",
+          },
+        ],
+      }),
     );
+
+    // runnerには1件目=素の名前、2件目="(2)"付きの別名で渡っている
+    expect(runGeminiSchedulingEvalMock).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        tasks: [
+          expect.objectContaining({ title: "同名タスク" }),
+          expect.objectContaining({ title: "同名タスク (2)" }),
+        ],
+      }),
+      expect.anything(),
+    );
+    // 結果は別名経由でそれぞれ正しい元タスクIDに戻っている
+    expect(results).toEqual([
+      {
+        taskId: "task-1",
+        startAt: new Date("2026-07-01T09:00:00"),
+        endAt: new Date("2026-07-01T09:30:00"),
+      },
+      {
+        taskId: "task-2",
+        startAt: new Date("2026-07-02T09:00:00"),
+        endAt: new Date("2026-07-02T09:30:00"),
+      },
+    ]);
   });
 
   it("options(model/maxAttempts)をrunnerにそのまま渡す", async () => {

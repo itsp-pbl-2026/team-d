@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { DEFAULT_WORKING_HOURS } from "./gemini/freeSlots";
 import { runGeminiSchedulingEval } from "./gemini/runner";
 import type {
-  FixedEvent,
+  ScheduleEvent,
   ScheduleFragment,
   TaskSpec,
   TestCase,
@@ -13,34 +13,41 @@ import type {
   GenerateScheduleResult,
 } from "./generateDomainService";
 
+type TaskLookup = { id: string; title: string };
+
 // GenerateScheduleDomainService の Gemini 実装。
 // 実際のTask/UpcomingEventモデルには workingHours/blockedTimes の概念がまだ無いため、
 // 稼働可能時間は暫定的にデフォルト値を使う(将来、設定機能ができたら差し替える)。
+//
+// gemini/ 側はタスクを「タイトル文字列」で識別するため、タイトルが重複していると
+// 生成結果を元のタスクIDへ正しく戻せない。そのため重複時は別名(エイリアス)を付けて
+// Geminiに渡し、結果を戻す際はエイリアス経由で元のタスク(id/title)を解決する。
 const buildTestCase = (
   input: GenerateScheduleDomainServiceInput,
-): { testCase: TestCase; idByTitle: Map<string, string> } => {
-  const idByTitle = new Map<string, string>();
+): { testCase: TestCase; taskByAlias: Map<string, TaskLookup> } => {
+  const taskByAlias = new Map<string, TaskLookup>();
+  const titleOccurrences = new Map<string, number>();
   const tasks: TaskSpec[] = [];
 
   for (const task of input.tasks) {
     const remainingMinutes = task.estimatedMinutes - task.actualMinutes;
     if (remainingMinutes <= 0) continue; // 残り時間がないタスクは配置対象外
 
-    if (idByTitle.has(task.title)) {
-      throw new Error(
-        `タスク名が重複しているため対応付けできません: ${task.title}`,
-      );
-    }
-    idByTitle.set(task.title, task.id);
+    const occurrence = (titleOccurrences.get(task.title) ?? 0) + 1;
+    titleOccurrences.set(task.title, occurrence);
+    const alias =
+      occurrence === 1 ? task.title : `${task.title} (${occurrence})`;
+
+    taskByAlias.set(alias, { id: task.id, title: task.title });
     tasks.push({
-      title: task.title,
+      title: alias,
       durationMin: remainingMinutes,
       deadline: dayjs(task.deadline).format("YYYY-MM-DDTHH:mm:ss"),
       priority: task.priority,
     });
   }
 
-  const fixedEvents: FixedEvent[] = input.events.map((event) => ({
+  const events: ScheduleEvent[] = input.events.map((event) => ({
     title: event.title,
     start: dayjs(event.startAt).format("YYYY-MM-DDTHH:mm:ss"),
     end: dayjs(event.endAt).format("YYYY-MM-DDTHH:mm:ss"),
@@ -49,21 +56,21 @@ const buildTestCase = (
   const testCase: TestCase = {
     name: "generate-schedule-domain-service",
     workingHours: DEFAULT_WORKING_HOURS,
-    fixedEvents,
+    events,
     blockedTimes: [],
     tasks,
   };
 
-  return { testCase, idByTitle };
+  return { testCase, taskByAlias };
 };
 
 const toResults = (
   schedule: ScheduleFragment[],
-  idByTitle: Map<string, string>,
+  taskByAlias: Map<string, TaskLookup>,
 ): GenerateScheduleResult[] =>
   schedule.map((fragment) => {
-    const taskId = idByTitle.get(fragment.task);
-    if (taskId == null) {
+    const task = taskByAlias.get(fragment.task);
+    if (task == null) {
       throw new Error(
         `生成されたスケジュールに未知のタスク名が含まれています: ${fragment.task}`,
       );
@@ -72,7 +79,7 @@ const toResults = (
     const endAt = dayjs(fragment.start)
       .add(fragment.durationMin, "minute")
       .toDate();
-    return { taskId, startAt, endAt };
+    return { taskId: task.id, startAt, endAt };
   });
 
 export type GeminiGenerateScheduleDomainServiceOptions = {
@@ -94,7 +101,7 @@ export class GeminiGenerateScheduleDomainService
   async handle(
     input: GenerateScheduleDomainServiceInput,
   ): Promise<GenerateScheduleResult[]> {
-    const { testCase, idByTitle } = buildTestCase(input);
+    const { testCase, taskByAlias } = buildTestCase(input);
     if (testCase.tasks.length === 0) return [];
 
     const result = await runGeminiSchedulingEval(testCase, {
@@ -108,6 +115,6 @@ export class GeminiGenerateScheduleDomainService
       );
     }
 
-    return toResults(result.schedule, idByTitle);
+    return toResults(result.schedule, taskByAlias);
   }
 }
