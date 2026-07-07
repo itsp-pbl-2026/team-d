@@ -38,7 +38,7 @@ function SchedulePage() {
     source: weekEvents,
     openForm: () => {},
   });
-  const { data: scheduleData } = useSchedulesForSchedule({
+  const { data: scheduleData, onEventDrop } = useSchedulesForSchedule({
     source: schedules,
     openForm: () => {},
   });
@@ -65,6 +65,9 @@ function SchedulePage() {
         date={today.format("YYYY-MM-DD")}
         view="week"
         color="indigo"
+        withEventsDragAndDrop
+        canDragEvent={(event) => event.payload?.isEditable === true}
+        onEventDrop={onEventDrop}
         weekViewProps={{
           withHeader: false,
           startTime: "09:00:00",
