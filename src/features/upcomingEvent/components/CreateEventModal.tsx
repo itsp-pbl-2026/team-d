@@ -23,6 +23,7 @@ export type CreateEventModalProps = {
   opened: boolean;
   onClose: () => void;
   onSubmit: (data: EventFormDataValidated) => void | Promise<void>;
+  onDelete?: () => void;
   data: EventFormData;
   setData: Dispatch<SetStateAction<EventFormData>>;
   mode?: "create" | "edit";
@@ -32,6 +33,7 @@ export const CreateEventModal = ({
   opened,
   onClose,
   onSubmit,
+  onDelete,
   data,
   setData,
   mode = "create",
@@ -138,6 +140,11 @@ export const CreateEventModal = ({
           <Button variant="subtle" color="gray" onClick={handleClose}>
             Cancel
           </Button>
+          {isEdit && onDelete && (
+            <Button color="red" variant="outline" onClick={onDelete}>
+              Delete
+            </Button>
+          )}
           <Button color="indigo" onClick={handleSubmit}>
             {isEdit ? "Save Changes" : "Create Event"}
           </Button>
