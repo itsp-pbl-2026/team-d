@@ -87,7 +87,7 @@ const insertScheduleFromModel = (db: DrizzleClient, scheduleModel: Schedule) =>
 const it = test.extend<{
   db: DrizzleClient;
 }>({
-  // biome-ignore lint/correctness/noEmptyPattern: fixture関数の第1引数は�?割代入パターンでなくてはならな�?ため
+  // biome-ignore lint/correctness/noEmptyPattern: fixture関数の第1引数は分割代入パターンでなくてはならないため
   db: async ({}, use) => {
     const testDrizzleClient = createTestDrizzleClient();
     migrate(testDrizzleClient, { migrationsFolder: "./drizzle" });
@@ -130,7 +130,7 @@ describe("ScheduleDrizzleRepository", () => {
       expect(result.getTask().getTitle()).toBe("task title");
     });
 
-    it("存在しな�?idではundefinedにな�?", async ({ db }) => {
+    it("存在しないidではundefinedになる", async ({ db }) => {
       const repository = new ScheduleDrizzleRepository(db);
       const result = await repository.findById("" as ScheduleId);
 
