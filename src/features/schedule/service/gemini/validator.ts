@@ -74,7 +74,7 @@ export const validateSchedule = (
     e.title,
   ]);
 
-  // biome-ignore-start lint/style/useNamingConvention: 検証項目ID(H1-H8/S1-S2)は仕様上の識別子
+  // biome-ignore-start lint/style/useNamingConvention: 検証項目ID(H1-H9/S1-S2)は仕様上の識別子
   const checks: Record<CheckId, CheckResult> = {
     H1: { name: "スキーマ正当性", pass: true, violations: [] },
     H2: { name: "タスク名の対応", pass: true, violations: [] },
@@ -84,6 +84,7 @@ export const validateSchedule = (
     H6: { name: "15分間隔", pass: true, violations: [] },
     H7: { name: "合計時間一致", pass: true, violations: [] },
     H8: { name: "締切厳守", pass: true, violations: [] },
+    H9: { name: "現在時刻以降の生成", pass: true, violations: [] },
     S1: { name: "優先度順", pass: true, violations: [] },
     S2: { name: "日別負荷の偏り", pass: true, violations: [] },
   };
@@ -226,6 +227,24 @@ export const validateSchedule = (
     }
   }
 
+    // ---- H9: 現在時刻以降の生成 ----
+  { //スコープを設定し,now,timeStringを閉じ込め
+    //現在時刻を取得
+    const now = new Date();
+    const timeString = now.toLocaleString("ja-JP");
+    for (const [task,start,] of fragments) {
+      const t = tasksByTitle.get(task);
+      if (t != null) {
+        if (start.isBefore(now)) {
+          fail(
+            "H9",
+            `${task} ${start.format("YYYY-MM-DDTHH:mm:ss")} が現在時刻${timeString}より前に生成`,
+          );
+        }
+      }
+    }
+  }
+
   // ---- S1: 優先度順(高優先タスクの完了が遅い逆転を数える) ----
   const completion = new Map<string, Dayjs>();
   for (const [task, , end] of fragments) {
@@ -299,7 +318,7 @@ export const validateSchedule = (
   }
 
   // ---- スコア集計 ----
-  const hardIds: CheckId[] = ["H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8"];
+  const hardIds: CheckId[] = ["H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8","H9"];
   const hardViolationCount = hardIds.reduce(
     (sum, id) => sum + checks[id].violations.length,
     0,
