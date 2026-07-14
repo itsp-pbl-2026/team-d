@@ -1,9 +1,13 @@
 import { Box, Button, Group, ScrollArea, Stack, Text } from "@mantine/core";
-import { Schedule, type ScheduleEventData } from "@mantine/schedule";
+import {
+  Schedule,
+  type ScheduleEventData,
+  type ScheduleViewLevel,
+} from "@mantine/schedule";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { Grid2X2PlusIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getSchedules } from "#/features/schedule/api/api";
 import { useGenerateSchedule } from "#/features/schedule/hooks/useGenerateSchedule";
 import { useSchedulesForSchedule } from "#/features/schedule/hooks/useSchedulesForSchedule";
@@ -48,6 +52,9 @@ function SchedulePage() {
   );
   const { generate } = useGenerateSchedule();
 
+  const [selectedDate, setSelectedDate] = useState<Date>(today.toDate());
+  const [view, setView] = useState<ScheduleViewLevel>("week");
+
   return (
     <Stack gap="lg" h="100%">
       <Group justify="right">
@@ -62,14 +69,19 @@ function SchedulePage() {
 
       <Schedule
         events={data}
-        date={today.format("YYYY-MM-DD")}
-        view="week"
+        date={selectedDate}
+        onDateChange={(date) => setSelectedDate(new Date(date))}
+        view={view}
+        onViewChange={setView}
         color="indigo"
         withEventsDragAndDrop
         canDragEvent={(event) => event.payload?.isEditable === true}
         onEventDrop={onEventDrop}
+        dayViewProps={{
+          startTime: "09:00:00",
+          endTime: "18:00:00",
+        }}
         weekViewProps={{
-          withHeader: false,
           startTime: "09:00:00",
           endTime: "18:00:00",
         }}
