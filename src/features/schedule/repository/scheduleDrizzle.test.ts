@@ -263,6 +263,30 @@ describe("ScheduleDrizzleRepository", () => {
       );
     });
   });
+
+  describe("deleteAll", () => {
+    it("データをすべて削除できる", async ({ db }) => {
+      await Promise.all(
+        [...new Array(5).keys()].map(async () => {
+          const task = createTask({ id: testIdGenerator.generate<Task>() });
+          await insertTaskFromModel(db, task);
+          await insertScheduleFromModel(
+            db,
+            createSchedule({ id: testIdGenerator.generate<Schedule>(), task }),
+          );
+        }),
+      );
+
+      const repository = new ScheduleDrizzleRepository(db);
+
+      expect(await repository.findAll()).toHaveLength(5);
+
+      await repository.deleteAll();
+
+      expect(await repository.findAll()).toHaveLength(0);
+    });
+  });
+
   describe("Task削除時のカスケード削除", () => {
     it("Taskを削除すると、紐づいているScheduleも一緒に削除される", async ({
       db,

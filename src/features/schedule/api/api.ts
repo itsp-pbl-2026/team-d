@@ -4,6 +4,7 @@ import { TaskDrizzleRepository } from "#/features/task/repository/taskDrizzle";
 import { UpcomingEventDrizzleRepository } from "#/features/upcomingEvent/repository/upcomingEventDrizzle";
 import type { ScheduleId, Schedule as ScheduleModel } from "../model/schedule";
 import { ScheduleDrizzleRepository } from "../repository/scheduleDrizzle";
+import { DeleteScheduleService } from "../service/delete";
 import { EditScheduleService } from "../service/edit";
 import { GeminiGenerateScheduleDomainService } from "../service/geminiDomainService";
 import { GenerateScheduleService } from "../service/generate";
@@ -29,6 +30,7 @@ const generateScheduleDomainService = new GeminiGenerateScheduleDomainService();
 
 const getService = new GetScheduleService(scheduleRepository);
 const editService = new EditScheduleService(scheduleRepository);
+const deleteService = new DeleteScheduleService(scheduleRepository);
 const generateService = new GenerateScheduleService(
   taskRepository,
   upcomingEventRepository,
@@ -70,6 +72,7 @@ export const editSchedule = createServerFn({ method: "POST" })
 
 export const generateSchedules = createServerFn({ method: "POST" }).handler(
   async (): Promise<ScheduleListItem[]> => {
+    await deleteService.deleteAll();
     const schedules = await generateService.handle();
     return schedules.map(serializeSchedule);
   },
