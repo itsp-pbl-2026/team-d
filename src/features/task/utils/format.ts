@@ -8,7 +8,7 @@ export type DeadlineLabel = {
 
 export const formatDeadline = (deadline: Date | string): DeadlineLabel => {
   const target = dayjs(deadline);
-  const today = dayjs().startOf("day");
+  const today = dayjs();
 
   if (target.isBefore(today)) {
     return { text: "Overdue", isOverdue: true, isToday: false };

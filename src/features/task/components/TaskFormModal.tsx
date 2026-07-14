@@ -192,9 +192,11 @@ export const TaskFormModal = ({
                     } else if (val === "pending") {
                       nextProgress = 0;
                     } else if (val === "in_progress") {
-                      // In Progressの場合、進捗が0%または100%であれば50%に設定する
-                      if (prev.progress === 100 || prev.progress === 0) {
-                        nextProgress = 50;
+                      // In Progressの場合、進捗が0%の場合は1%に、100%の場合は99%に設定する
+                      if (prev.progress === 100) {
+                        nextProgress = 99;
+                      } else if (prev.progress === 0) {
+                        nextProgress = 1;
                       }
                     }
                     return {
