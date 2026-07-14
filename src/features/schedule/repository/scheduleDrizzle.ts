@@ -100,4 +100,8 @@ export class ScheduleDrizzleRepository implements ScheduleRepository {
   async delete(id: ScheduleId) {
     await this.#db.delete(scheduleTable).where(eq(scheduleTable.id, id));
   }
+
+  async deleteAll(): Promise<void> {
+    await this.#db.delete(scheduleTable);
+  }
 }
