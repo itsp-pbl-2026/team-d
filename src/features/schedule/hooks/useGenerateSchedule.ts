@@ -20,6 +20,6 @@ export const useGenerateSchedule = () => {
 
   return {
     generate,
-    isGenerating
+    isGenerating,
   };
 };
