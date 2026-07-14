@@ -21,10 +21,7 @@ describe("moveScheduleKeepingDuration", () => {
   it("移動前の所要時間を維持したまま開始時刻だけ移動する", () => {
     const schedule = createSchedule();
 
-    const moved = moveScheduleKeepingDuration(
-      schedule,
-      "2026-07-15 12:00:00",
-    );
+    const moved = moveScheduleKeepingDuration(schedule, "2026-07-15 12:00:00");
 
     expect(moved.startAt).toBe("2026-07-15T03:00:00.000Z");
     expect(moved.endAt).toBe("2026-07-15T04:30:00.000Z");
@@ -42,9 +39,9 @@ describe("moveScheduleKeepingDuration", () => {
       "2026-07-16 09:30:00",
     );
 
-    expect(dayjs(twiceMoved.endAt).diff(dayjs(twiceMoved.startAt), "minute")).toBe(
-      90,
-    );
+    expect(
+      dayjs(twiceMoved.endAt).diff(dayjs(twiceMoved.startAt), "minute"),
+    ).toBe(90);
     expect(twiceMoved.startAt).toBe("2026-07-16T00:30:00.000Z");
     expect(twiceMoved.endAt).toBe("2026-07-16T02:00:00.000Z");
   });
