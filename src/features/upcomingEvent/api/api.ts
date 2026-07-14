@@ -4,6 +4,7 @@ import { idGenerator } from "#/features/id";
 import type { UpcomingEvent, UpcomingEventId } from "../model/upcomingEvent";
 import { UpcomingEventDrizzleRepository } from "../repository/upcomingEventDrizzle";
 import { CreateUpcomingEventService } from "../service/create";
+import { DeleteUpcomingEventService } from "../service/delete";
 import { EditUpcomingEventService } from "../service/edit";
 import { GetUpcomingEventService } from "../service/get";
 
@@ -19,6 +20,7 @@ const repository = new UpcomingEventDrizzleRepository(drizzleClient);
 const getService = new GetUpcomingEventService(repository);
 const createService = new CreateUpcomingEventService(idGenerator, repository);
 const editService = new EditUpcomingEventService(repository);
+const deleteService = new DeleteUpcomingEventService(repository);
 
 const serializeUpcomingEvent = (
   event: UpcomingEvent,
@@ -77,4 +79,12 @@ export const editUpcomingEvent = createServerFn({ method: "POST" })
     );
 
     return serializeUpcomingEvent(event);
+  });
+
+export const deleteUpcomingEvent = createServerFn({
+  method: "POST",
+})
+  .inputValidator((data: { id: UpcomingEventId }) => data)
+  .handler(async ({ data }) => {
+    await deleteService.delete(data.id);
   });
