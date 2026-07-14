@@ -41,6 +41,7 @@ function CalenderPage() {
     data: editEventFormData,
     setData: setEditEventFormData,
     submit: handleEditEvent,
+    submitDelete: handleDeleteEvent,
   } = useEditEventForm();
 
   // Derive a string format for the schedule component
@@ -115,6 +116,7 @@ function CalenderPage() {
         opened={eventEditOpened}
         onClose={handleEditEventClose}
         onSubmit={handleEditEvent}
+        onDelete={handleDeleteEvent}
         data={editEventFormData}
         setData={setEditEventFormData}
         mode="edit"
