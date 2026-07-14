@@ -1,107 +1,103 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import type { TaskListItem } from "../api/api";
 
-export const useTaskFilters = (tasks: TaskListItem[]) => {
-  const [filterTitle, setFilterTitle] = useState("");
-  const [filterMinPriority, setFilterMinPriority] = useState<number | null>(
-    null,
-  );
-  const [filterMaxPriority, setFilterMaxPriority] = useState<number | null>(
-    null,
-  );
-  const [filterDeadlineStart, setFilterDeadlineStart] = useState<Date | null>(
-    null,
-  );
-  const [filterDeadlineEnd, setFilterDeadlineEnd] = useState<Date | null>(null);
-  const [sortBy, setSortBy] = useState<string>("priority");
+export type TaskFilters = {
+  title: string;
+  minPriority: number | null;
+  maxPriority: number | null;
+  deadlineStart: Date | null;
+  deadlineEnd: Date | null;
+};
 
-  const handleResetFilters = () => {
-    setFilterTitle("");
-    setFilterMinPriority(null);
-    setFilterMaxPriority(null);
-    setFilterDeadlineStart(null);
-    setFilterDeadlineEnd(null);
-  };
+export type TaskSortBy = "priority" | "deadline" | "title";
 
-  const filteredTasks = tasks.filter((task) => {
-    // Title filter
-    if (filterTitle.trim() !== "") {
-      if (!task.title.toLowerCase().includes(filterTitle.toLowerCase())) {
-        return false;
-      }
+const createEmptyFilters = (): TaskFilters => ({
+  title: "",
+  minPriority: null,
+  maxPriority: null,
+  deadlineStart: null,
+  deadlineEnd: null,
+});
+
+const matchesFilters = (task: TaskListItem, filters: TaskFilters): boolean => {
+  if (
+    filters.title.trim() !== "" &&
+    !task.title.toLowerCase().includes(filters.title.toLowerCase())
+  ) {
+    return false;
+  }
+  if (filters.minPriority !== null && task.priority < filters.minPriority) {
+    return false;
+  }
+  if (filters.maxPriority !== null && task.priority > filters.maxPriority) {
+    return false;
+  }
+  const deadline = new Date(task.deadline);
+  if (filters.deadlineStart !== null && deadline < filters.deadlineStart) {
+    return false;
+  }
+  if (filters.deadlineEnd !== null && deadline > filters.deadlineEnd) {
+    return false;
+  }
+  return true;
+};
+
+const sortTasks = (tasks: TaskListItem[], sortBy: TaskSortBy): TaskListItem[] =>
+  [...tasks].sort((a, b) => {
+    switch (sortBy) {
+      case "priority":
+        return b.priority - a.priority;
+      case "deadline":
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      default:
+        return a.title.localeCompare(b.title);
     }
-    // Priority level min
-    if (filterMinPriority !== null) {
-      if (task.priority < filterMinPriority) {
-        return false;
-      }
-    }
-    // Priority level max
-    if (filterMaxPriority !== null) {
-      if (task.priority > filterMaxPriority) {
-        return false;
-      }
-    }
-    // Deadline start
-    if (filterDeadlineStart !== null) {
-      if (new Date(task.deadline) < filterDeadlineStart) {
-        return false;
-      }
-    }
-    // Deadline end
-    if (filterDeadlineEnd !== null) {
-      if (new Date(task.deadline) > filterDeadlineEnd) {
-        return false;
-      }
-    }
-    return true;
   });
 
-  const sortTasks = (tasksList: TaskListItem[]) => {
-    return [...tasksList].sort((a, b) => {
-      if (sortBy === "priority") {
-        return b.priority - a.priority;
-      }
-      if (sortBy === "deadline") {
-        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
-      }
-      if (sortBy === "title") {
-        return a.title.localeCompare(b.title);
-      }
-      return 0;
-    });
-  };
+// タスク一覧の絞り込みと並び替え。filters は1つのオブジェクトで管理する。
+export const useTaskFilters = (tasks: TaskListItem[]) => {
+  const [filters, setFilters] = useState(createEmptyFilters());
+  const [sortBy, setSortBy] = useState<TaskSortBy>("priority");
 
-  const sortedIncompleteTasks = sortTasks(
-    filteredTasks.filter((t) => t.status !== "done"),
-  );
-  const sortedCompletedTasks = sortTasks(
-    filteredTasks.filter((t) => t.status === "done"),
+  const resetFilters = useCallback(() => setFilters(createEmptyFilters()), []);
+
+  const isFilterActive =
+    filters.title.trim() !== "" ||
+    filters.minPriority !== null ||
+    filters.maxPriority !== null ||
+    filters.deadlineStart !== null ||
+    filters.deadlineEnd !== null;
+
+  const filteredTasks = useMemo(
+    () => tasks.filter((task) => matchesFilters(task, filters)),
+    [tasks, filters],
   );
 
-  const isAnyFilterActive =
-    filterTitle.trim() !== "" ||
-    filterMinPriority !== null ||
-    filterMaxPriority !== null ||
-    filterDeadlineStart !== null ||
-    filterDeadlineEnd !== null;
+  const incompleteTasks = useMemo(
+    () =>
+      sortTasks(
+        filteredTasks.filter((task) => task.status !== "done"),
+        sortBy,
+      ),
+    [filteredTasks, sortBy],
+  );
+  const completedTasks = useMemo(
+    () =>
+      sortTasks(
+        filteredTasks.filter((task) => task.status === "done"),
+        sortBy,
+      ),
+    [filteredTasks, sortBy],
+  );
 
   return {
-    filterTitle,
-    setFilterTitle,
-    filterMinPriority,
-    setFilterMinPriority,
-    filterMaxPriority,
-    setFilterMaxPriority,
-    filterDeadlineStart,
-    setFilterDeadlineStart,
-    filterDeadlineEnd,
-    setFilterDeadlineEnd,
+    filters,
+    setFilters,
+    resetFilters,
+    isFilterActive,
     sortBy,
     setSortBy,
-    handleResetFilters,
-    sortedIncompleteTasks,
-    sortedCompletedTasks,
-    isAnyFilterActive,
+    incompleteTasks,
+    completedTasks,
   };
 };

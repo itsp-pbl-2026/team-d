@@ -71,7 +71,7 @@ export const updateTask = createServerFn({ method: "POST" })
       id: TaskId;
       title?: string;
       description?: string;
-      deadline?: string | Date;
+      deadline?: Date;
       estimatedMinutes?: number;
       actualMinutes?: number;
       priority?: number;
@@ -80,12 +80,7 @@ export const updateTask = createServerFn({ method: "POST" })
     }) => data,
   )
   .handler(async ({ data }): Promise<TaskListItem> => {
-    const updated = await updateService.handle({
-      ...data,
-      id: data.id,
-      deadline:
-        data.deadline !== undefined ? new Date(data.deadline) : undefined,
-    });
+    const updated = await updateService.handle(data);
     return serializeTask(updated);
   });
 

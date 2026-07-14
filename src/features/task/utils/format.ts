@@ -1,42 +1,29 @@
-export const formatDeadline = (
-  deadline: Date | string,
-): {
+import dayjs from "dayjs";
+
+export type DeadlineLabel = {
   text: string;
   isOverdue: boolean;
   isToday: boolean;
-} => {
-  const deadlineDate = new Date(deadline);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const dateOnly = new Date(
-    deadlineDate.getFullYear(),
-    deadlineDate.getMonth(),
-    deadlineDate.getDate(),
-  );
+};
 
-  if (dateOnly < today) {
+export const formatDeadline = (deadline: Date | string): DeadlineLabel => {
+  const target = dayjs(deadline);
+  const today = dayjs().startOf("day");
+
+  if (target.isBefore(today)) {
     return { text: "Overdue", isOverdue: true, isToday: false };
   }
-  if (dateOnly.getTime() === today.getTime()) {
-    const timeStr = deadlineDate.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    return { text: `Today, ${timeStr}`, isOverdue: false, isToday: true };
+  if (target.isSame(today, "day")) {
+    return {
+      text: `Today, ${target.format("HH:mm")}`,
+      isOverdue: false,
+      isToday: true,
+    };
   }
-  if (dateOnly.getTime() === tomorrow.getTime()) {
+  if (target.isSame(today.add(1, "day"), "day")) {
     return { text: "Tomorrow", isOverdue: false, isToday: false };
   }
-  return {
-    text: deadlineDate.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    }),
-    isOverdue: false,
-    isToday: false,
-  };
+  return { text: target.format("MMM D"), isOverdue: false, isToday: false };
 };
 
 export const formatEstimatedTime = (minutes: number): string => {
@@ -44,34 +31,4 @@ export const formatEstimatedTime = (minutes: number): string => {
   const mins = minutes % 60;
   if (hours === 0) return `${mins}m`;
   return `${hours}h ${mins.toString().padStart(2, "0")}m`;
-};
-
-export const formatCompletedDeadline = (deadline: Date | string): string => {
-  const deadlineDate = new Date(deadline);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  const dateOnly = new Date(
-    deadlineDate.getFullYear(),
-    deadlineDate.getMonth(),
-    deadlineDate.getDate(),
-  );
-
-  if (dateOnly.getTime() === today.getTime()) {
-    const timeStr = deadlineDate.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-    return `Deadline: Today, ${timeStr}`;
-  }
-  if (dateOnly.getTime() === tomorrow.getTime()) {
-    return "Deadline: Tomorrow";
-  }
-  if (dateOnly.getTime() === yesterday.getTime()) {
-    return "Deadline: Yesterday";
-  }
-  return `Deadline: ${deadlineDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
 };

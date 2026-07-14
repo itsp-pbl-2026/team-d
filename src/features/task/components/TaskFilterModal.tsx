@@ -10,121 +10,112 @@ import {
   Title,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
+import { Filter } from "lucide-react";
+import type { Dispatch, SetStateAction } from "react";
+import type { TaskFilters } from "../hooks/useTaskFilters";
 
-export interface TaskFilterModalProps {
+export type TaskFilterModalProps = {
   opened: boolean;
   onClose: () => void;
-  filterTitle: string;
-  setFilterTitle: (val: string) => void;
-  filterMinPriority: number | null;
-  setFilterMinPriority: (val: number | null) => void;
-  filterMaxPriority: number | null;
-  setFilterMaxPriority: (val: number | null) => void;
-  filterDeadlineStart: Date | null;
-  setFilterDeadlineStart: (val: Date | null) => void;
-  filterDeadlineEnd: Date | null;
-  setFilterDeadlineEnd: (val: Date | null) => void;
+  filters: TaskFilters;
+  setFilters: Dispatch<SetStateAction<TaskFilters>>;
   onReset: () => void;
-}
+};
 
 export const TaskFilterModal = ({
   opened,
   onClose,
-  filterTitle,
-  setFilterTitle,
-  filterMinPriority,
-  setFilterMinPriority,
-  filterMaxPriority,
-  setFilterMaxPriority,
-  filterDeadlineStart,
-  setFilterDeadlineStart,
-  filterDeadlineEnd,
-  setFilterDeadlineEnd,
+  filters,
+  setFilters,
   onReset,
 }: TaskFilterModalProps) => {
   return (
     <Modal
       opened={opened}
       onClose={onClose}
-      withCloseButton={false}
+      withCloseButton={true}
+      title={
+        <Group gap="sm">
+          <Filter size={20} color="var(--mantine-color-indigo-6)" />
+          <Title order={4}>Filter Tasks</Title>
+        </Group>
+      }
       size="md"
       radius="md"
-      padding={0}
     >
-      <Stack gap={0}>
-        <Box p="lg" pb="sm">
-          <Title order={3}>Filter Tasks</Title>
-          <Text c="dimmed" size="sm" mt={4}>
-            Narrow down your task list by title, priority, or deadline.
+      <Stack gap="md">
+        <TextInput
+          label="Search Title"
+          placeholder="Search by task title..."
+          value={filters.title}
+          onChange={(e) => {
+            const val = e.currentTarget.value;
+            setFilters((prev) => ({ ...prev, title: val }));
+          }}
+        />
+
+        <Box>
+          <Text size="sm" fw={500} mb={4}>
+            Priority Level Range
           </Text>
-        </Box>
-        <Box p="lg" pt={0}>
-          <Stack gap="md">
-            <TextInput
-              label="Search Title"
-              placeholder="Search by task title..."
-              value={filterTitle}
-              onChange={(e) => setFilterTitle(e.currentTarget.value)}
-            />
-
-            <Box>
-              <Text size="sm" fw={500} mb={4}>
-                Priority Level Range
+          <Group gap="lg">
+            <Stack gap={2}>
+              <Text size="xs" c="dimmed">
+                Min Priority
               </Text>
-              <Group gap="lg">
-                <Stack gap={2}>
-                  <Text size="xs" c="dimmed">
-                    Min Priority
-                  </Text>
-                  <Rating
-                    size="md"
-                    count={5}
-                    value={filterMinPriority || 0}
-                    onChange={(val) => setFilterMinPriority(val || null)}
-                  />
-                </Stack>
-                <Stack gap={2}>
-                  <Text size="xs" c="dimmed">
-                    Max Priority
-                  </Text>
-                  <Rating
-                    size="md"
-                    count={5}
-                    value={filterMaxPriority || 0}
-                    onChange={(val) => setFilterMaxPriority(val || null)}
-                  />
-                </Stack>
-              </Group>
-            </Box>
-
-            <Group grow align="flex-start">
-              <DateTimePicker
-                label="Deadline From"
-                placeholder="Select start date/time"
-                value={filterDeadlineStart}
+              <Rating
+                size="md"
+                count={5}
+                value={filters.minPriority ?? 0}
                 onChange={(val) =>
-                  setFilterDeadlineStart(val ? new Date(val) : null)
+                  setFilters((prev) => ({ ...prev, minPriority: val || null }))
                 }
-                clearable
               />
-              <DateTimePicker
-                label="Deadline To"
-                placeholder="Select end date/time"
-                value={filterDeadlineEnd}
+            </Stack>
+            <Stack gap={2}>
+              <Text size="xs" c="dimmed">
+                Max Priority
+              </Text>
+              <Rating
+                size="md"
+                count={5}
+                value={filters.maxPriority ?? 0}
                 onChange={(val) =>
-                  setFilterDeadlineEnd(val ? new Date(val) : null)
+                  setFilters((prev) => ({ ...prev, maxPriority: val || null }))
                 }
-                clearable
               />
-            </Group>
-          </Stack>
+            </Stack>
+          </Group>
         </Box>
-        <Group
-          justify="flex-end"
-          p="md"
-          bg="gray.0"
-          style={{ borderTop: "1px solid var(--mantine-color-gray-2)" }}
-        >
+
+        <Group grow align="flex-start">
+          <DateTimePicker
+            label="Deadline From"
+            placeholder="Select start date/time"
+            value={filters.deadlineStart}
+            onChange={(val) =>
+              setFilters((prev) => ({
+                ...prev,
+                deadlineStart: val ? new Date(val) : null,
+              }))
+            }
+            clearable
+          />
+          <DateTimePicker
+            label="Deadline To"
+            placeholder="Select end date/time"
+            value={filters.deadlineEnd}
+            onChange={(val) =>
+              setFilters((prev) => ({
+                ...prev,
+                deadlineEnd: val ? new Date(val) : null,
+              }))
+            }
+            clearable
+          />
+        </Group>
+
+        <Group justify="flex-end" mt="md">
           <Button variant="subtle" color="gray" onClick={onReset}>
             Reset Filters
           </Button>
