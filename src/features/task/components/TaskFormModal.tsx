@@ -154,12 +154,21 @@ export const TaskFormModal = ({
               <Slider
                 value={data.progress}
                 onChange={(val) =>
-                  setData((prev) => ({
-                    ...prev,
-                    progress: val,
-                    // 100%に達したら完了扱いにする
-                    status: val === 100 ? "done" : prev.status,
-                  }))
+                  setData((prev) => {
+                    let nextStatus = prev.status;
+                    if (val === 100) {
+                      nextStatus = "done";
+                    } else if (val === 0) {
+                      nextStatus = "pending";
+                    } else {
+                      nextStatus = "in_progress";
+                    }
+                    return {
+                      ...prev,
+                      progress: val,
+                      status: nextStatus,
+                    };
+                  })
                 }
                 min={0}
                 max={100}
@@ -176,12 +185,24 @@ export const TaskFormModal = ({
                 fullWidth
                 value={data.status}
                 onChange={(val) =>
-                  setData((prev) => ({
-                    ...prev,
-                    status: val,
-                    // 完了を選んだら進捗も100%にする
-                    progress: val === "done" ? 100 : prev.progress,
-                  }))
+                  setData((prev) => {
+                    let nextProgress = prev.progress;
+                    if (val === "done") {
+                      nextProgress = 100;
+                    } else if (val === "pending") {
+                      nextProgress = 0;
+                    } else if (val === "in_progress") {
+                      // In Progressの場合、進捗が0%または100%であれば50%に設定する
+                      if (prev.progress === 100 || prev.progress === 0) {
+                        nextProgress = 50;
+                      }
+                    }
+                    return {
+                      ...prev,
+                      status: val,
+                      progress: nextProgress,
+                    };
+                  })
                 }
                 data={[
                   { value: "pending", label: "Pending" },
