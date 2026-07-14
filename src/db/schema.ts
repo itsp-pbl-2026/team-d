@@ -38,7 +38,7 @@ export const schedule = sqliteTable("schedule", {
   taskId: text("task_id")
     .$type<TaskId>()
     .notNull()
-    .references(() => task.id),
+    .references(() => task.id, { onDelete: "cascade" }),
 });
 
 export const scheduleRelations = relations(schedule, ({ one }) => ({

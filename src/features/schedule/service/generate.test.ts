@@ -27,6 +27,7 @@ const mockedScheduleRepository = {
   findAll: vi.fn(),
   save: vi.fn(),
   delete: vi.fn(),
+  deleteAll: vi.fn(),
 } satisfies ScheduleRepository;
 
 const mockedGenerateScheduleDomainService = {

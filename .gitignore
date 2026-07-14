@@ -12,3 +12,5 @@ __unconfig*
 todos.json
 dev.db
 coverage
+src/features/schedule/service/gemini/result/*
+!src/features/schedule/service/gemini/result/.gitkeep

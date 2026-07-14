@@ -1,7 +1,11 @@
 import { useDisclosure } from "@mantine/hooks";
 import { useRouter } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
-import { editUpcomingEvent, type UpcomingEventListItem } from "../api/api";
+import {
+  deleteUpcomingEvent,
+  editUpcomingEvent,
+  type UpcomingEventListItem,
+} from "../api/api";
 import type { UpcomingEventId } from "../model/upcomingEvent";
 import {
   type EventFormDataValidated,
@@ -36,9 +40,7 @@ export const useEditEventForm = () => {
 
   const submit = useCallback(
     async (data: EventFormDataValidated) => {
-      if (editingEventId == null) {
-        return;
-      }
+      if (editingEventId == null) return;
 
       try {
         await editUpcomingEvent({
@@ -60,6 +62,23 @@ export const useEditEventForm = () => {
     [editingEventId, handleClose, router],
   );
 
+  const submitDelete = useCallback(async () => {
+    if (editingEventId == null) return;
+
+    try {
+      await deleteUpcomingEvent({
+        data: {
+          id: editingEventId,
+        },
+      });
+
+      router.invalidate();
+      handleClose();
+    } catch (error) {
+      console.error("Failed to delete event", error);
+    }
+  }, [editingEventId, handleClose, router]);
+
   return {
     opened,
     open: openForEdit,
@@ -67,5 +86,6 @@ export const useEditEventForm = () => {
     data,
     setData,
     submit,
+    submitDelete,
   };
 };

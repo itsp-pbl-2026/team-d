@@ -9,11 +9,17 @@ import {
   Title,
 } from "@mantine/core";
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Calendar as CalendarIcon, Home, Zap } from "lucide-react";
+import {
+  CalendarIcon,
+  HomeIcon,
+  NotebookTabsIcon,
+  ZapIcon,
+} from "lucide-react";
 
 const NAV_LINKS = [
-  { icon: Home, label: "Home", to: "/" },
+  { icon: HomeIcon, label: "Home", to: "/" },
   { icon: CalendarIcon, label: "Calender", to: "/calender" },
+  { icon: NotebookTabsIcon, label: "Schedule", to: "/schedule" },
 ];
 
 export function DashboardLayout() {
@@ -33,7 +39,7 @@ export function DashboardLayout() {
       <AppShell.Navbar p="md" withBorder>
         <Group mb="xl" mt="xs" px="sm">
           <ThemeIcon variant="filled" color="indigo.9" size="lg">
-            <Zap size={20} />
+            <ZapIcon size={20} />
           </ThemeIcon>
           <Box>
             <Title order={4} c="indigo.9" style={{ lineHeight: 1.2 }}>
