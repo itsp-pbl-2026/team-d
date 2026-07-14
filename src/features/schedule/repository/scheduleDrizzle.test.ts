@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import type { SQLiteInsertValue } from "drizzle-orm/sqlite-core";
 import { assert, describe, expect, test } from "vitest";
@@ -260,6 +261,26 @@ describe("ScheduleDrizzleRepository", () => {
       await expect(repository.delete("" as ScheduleId)).resolves.toBe(
         undefined,
       );
+    });
+  });
+  describe("Task削除時のカスケード削除", () => {
+    it("Taskを削除すると、紐づいているScheduleも一緒に削除される", async ({
+      db,
+    }) => {
+      // 1. TaskとScheduleをデータベースに入れる
+      const taskModel = createTask();
+      const scheduleModel = createSchedule({ task: taskModel });
+      await insertTaskFromModel(db, taskModel);
+      await insertScheduleFromModel(db, scheduleModel);
+
+      // 2. Taskを削除する
+      await db.delete(task).where(eq(task.id, taskModel.getId()));
+
+      // 3. Scheduleも消えているか確認する
+      const repository = new ScheduleDrizzleRepository(db);
+      const deletedSchedule = await repository.findById(scheduleModel.getId());
+
+      expect(deletedSchedule).toBeUndefined();
     });
   });
 });
