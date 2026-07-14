@@ -1,4 +1,12 @@
-import { Box, Button, Group, ScrollArea, Stack, Text } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Group,
+  LoadingOverlay,
+  ScrollArea,
+  Stack,
+  Text,
+} from "@mantine/core";
 import { Schedule, type ScheduleEventData } from "@mantine/schedule";
 import { createFileRoute } from "@tanstack/react-router";
 import dayjs from "dayjs";
@@ -46,7 +54,7 @@ function SchedulePage() {
     () => [...eventData, ...scheduleData],
     [eventData, scheduleData],
   );
-  const { generate } = useGenerateSchedule();
+  const { generate, isGenerating } = useGenerateSchedule();
 
   return (
     <Stack gap="lg" h="100%">
@@ -55,43 +63,50 @@ function SchedulePage() {
           leftSection={<Grid2X2PlusIcon size={16} />}
           color="indigo"
           onClick={generate}
+          loading={isGenerating}
+          loaderProps={{
+            type: "dots",
+          }}
         >
           {schedules.length === 0 ? "Generate Schedule" : "Regenerate Schedule"}
         </Button>
       </Group>
 
-      <Schedule
-        events={data}
-        date={today.format("YYYY-MM-DD")}
-        view="week"
-        color="indigo"
-        withEventsDragAndDrop
-        canDragEvent={(event) => event.payload?.isEditable === true}
-        onEventDrop={onEventDrop}
-        weekViewProps={{
-          withHeader: false,
-          startTime: "09:00:00",
-          endTime: "18:00:00",
-        }}
-        renderEventBody={(
-          event: ScheduleEventData<{ description: string }>,
-        ) => (
-          <>
-            <Box>{event.title}</Box>
-            <ScrollArea
-              c="dark"
-              h="100%"
-              styles={{
-                scrollbar: { background: "transparent" },
-              }}
-            >
-              <Text c="dark" size="sm">
-                {event.payload?.description}
-              </Text>
-            </ScrollArea>
-          </>
-        )}
-      />
+      <Box pos="relative">
+        <LoadingOverlay visible={isGenerating} />
+        <Schedule
+          events={data}
+          date={today.format("YYYY-MM-DD")}
+          view="week"
+          color="indigo"
+          withEventsDragAndDrop
+          canDragEvent={(event) => event.payload?.isEditable === true}
+          onEventDrop={onEventDrop}
+          weekViewProps={{
+            withHeader: false,
+            startTime: "09:00:00",
+            endTime: "18:00:00",
+          }}
+          renderEventBody={(
+            event: ScheduleEventData<{ description: string }>,
+          ) => (
+            <>
+              <Box>{event.title}</Box>
+              <ScrollArea
+                c="dark"
+                h="100%"
+                styles={{
+                  scrollbar: { background: "transparent" },
+                }}
+              >
+                <Text c="dark" size="sm">
+                  {event.payload?.description}
+                </Text>
+              </ScrollArea>
+            </>
+          )}
+        />
+      </Box>
     </Stack>
   );
 }
