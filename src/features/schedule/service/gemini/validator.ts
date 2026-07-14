@@ -227,12 +227,13 @@ export const validateSchedule = (
     }
   }
 
-    // ---- H9: 現在時刻以降の生成 ----
-  { //スコープを設定し,now,timeStringを閉じ込め
+  // ---- H9: 現在時刻以降の生成 ----
+  {
+    //スコープを設定し,now,timeStringを閉じ込め
     //現在時刻を取得
     const now = new Date();
     const timeString = now.toLocaleString("ja-JP");
-    for (const [task,start,] of fragments) {
+    for (const [task, start] of fragments) {
       const t = tasksByTitle.get(task);
       if (t != null) {
         if (start.isBefore(now)) {
@@ -318,7 +319,17 @@ export const validateSchedule = (
   }
 
   // ---- スコア集計 ----
-  const hardIds: CheckId[] = ["H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8","H9"];
+  const hardIds: CheckId[] = [
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
+    "H7",
+    "H8",
+    "H9",
+  ];
   const hardViolationCount = hardIds.reduce(
     (sum, id) => sum + checks[id].violations.length,
     0,
