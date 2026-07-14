@@ -11,8 +11,8 @@ import { GetScheduleService } from "../service/get";
 
 export type ScheduleListItem = {
   id: ScheduleId;
-  startAt: Date;
-  endAt: Date;
+  startAt: string;
+  endAt: string;
   task: {
     id: string;
     title: string;
@@ -41,8 +41,8 @@ const serializeSchedule = (schedule: ScheduleModel): ScheduleListItem => {
 
   return {
     id: schedule.getId(),
-    startAt: schedule.getStartAt(),
-    endAt: schedule.getEndAt(),
+    startAt: schedule.getStartAt().toISOString(),
+    endAt: schedule.getEndAt().toISOString(),
     task: {
       id: task.getId(),
       title: task.getTitle(),

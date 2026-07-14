@@ -3,6 +3,7 @@ import { useRouter } from "@tanstack/react-router";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { editSchedule, type ScheduleListItem } from "../api/api";
+import { moveScheduleKeepingDuration } from "./moveScheduleKeepingDuration";
 
 export type UseEventsForScheduleProps = {
   source: ScheduleListItem[];
@@ -34,17 +35,16 @@ export const useSchedulesForSchedule = ({
   useEffect(() => setSchedules(source), [source]);
 
   const onEventDrop = useCallback<NonNullable<ScheduleProps["onEventDrop"]>>(
-    async ({ eventId, newStart, newEnd }) => {
+    async ({ eventId, newStart }) => {
       const previousSchedule = schedules.find(
         (schedule) => schedule.id === eventId,
       );
       if (!previousSchedule) return;
 
-      const updatedSchedule: ScheduleListItem = {
-        ...previousSchedule,
-        startAt: dayjs(newStart).toDate(),
-        endAt: dayjs(newEnd).toDate(),
-      };
+      const updatedSchedule = moveScheduleKeepingDuration(
+        previousSchedule,
+        newStart,
+      );
 
       setSchedules((prev) =>
         prev.map((schedule) =>
@@ -56,8 +56,8 @@ export const useSchedulesForSchedule = ({
         await editSchedule({
           data: {
             id: updatedSchedule.id,
-            startAt: updatedSchedule.startAt,
-            endAt: updatedSchedule.endAt,
+            startAt: dayjs(updatedSchedule.startAt).toDate(),
+            endAt: dayjs(updatedSchedule.endAt).toDate(),
           },
         });
 
