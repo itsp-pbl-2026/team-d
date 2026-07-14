@@ -1,8 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { drizzleClient } from "#/db/drizzleClient";
+import { TaskDrizzleRepository } from "#/features/task/repository/taskDrizzle";
+import { UpcomingEventDrizzleRepository } from "#/features/upcomingEvent/repository/upcomingEventDrizzle";
 import type { ScheduleId, Schedule as ScheduleModel } from "../model/schedule";
 import { ScheduleDrizzleRepository } from "../repository/scheduleDrizzle";
 import { EditScheduleService } from "../service/edit";
+import { GeminiGenerateScheduleDomainService } from "../service/geminiDomainService";
+import { GenerateScheduleService } from "../service/generate";
 import { GetScheduleService } from "../service/get";
 
 export type ScheduleListItem = {
@@ -16,9 +20,21 @@ export type ScheduleListItem = {
   };
 };
 
+const taskRepository = new TaskDrizzleRepository(drizzleClient);
+const upcomingEventRepository = new UpcomingEventDrizzleRepository(
+  drizzleClient,
+);
 const scheduleRepository = new ScheduleDrizzleRepository(drizzleClient);
+const generateScheduleDomainService = new GeminiGenerateScheduleDomainService();
+
 const getService = new GetScheduleService(scheduleRepository);
 const editService = new EditScheduleService(scheduleRepository);
+const generateService = new GenerateScheduleService(
+  taskRepository,
+  upcomingEventRepository,
+  scheduleRepository,
+  generateScheduleDomainService,
+);
 
 const serializeSchedule = (schedule: ScheduleModel): ScheduleListItem => {
   const task = schedule.getTask();
@@ -53,7 +69,8 @@ export const editSchedule = createServerFn({ method: "POST" })
   });
 
 export const generateSchedules = createServerFn({ method: "POST" }).handler(
-  async () => {
-    throw new Error("not implemented yet.");
+  async (): Promise<ScheduleListItem[]> => {
+    const schedules = await generateService.handle();
+    return schedules.map(serializeSchedule);
   },
 );
