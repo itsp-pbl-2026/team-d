@@ -188,7 +188,7 @@ describe("RuleBasedGenerateScheduleDomainService", () => {
       ],
     };
     const service = new RuleBasedGenerateScheduleDomainService({
-      attempts: 500,
+      attempts: 100,
       candidateCount: 10,
       seed: 42,
       now: new Date("2026-07-08T08:00:00"),
