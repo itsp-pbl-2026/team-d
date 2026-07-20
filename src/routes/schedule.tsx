@@ -70,10 +70,8 @@ function SchedulePage() {
     [eventData, scheduleData],
   );
   const { generate, isGenerating } = useGenerateSchedule();
-  const {
-    generate: generateRuleBased,
-    isGenerating: isGeneratingRuleBased,
-  } = useGenerateRuleBasedSchedule();
+  const { generate: generateRuleBased, isGenerating: isGeneratingRuleBased } =
+    useGenerateRuleBasedSchedule();
   const isAnyGenerating = isGenerating || isGeneratingRuleBased;
 
   const [selectedDate, setSelectedDate] = useState<Date>(today.toDate());

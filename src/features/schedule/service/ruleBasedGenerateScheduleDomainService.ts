@@ -84,8 +84,7 @@ class SeededRandom {
 
   int(minInclusive: number, maxInclusive: number): number {
     return (
-      minInclusive +
-      Math.floor(this.next() * (maxInclusive - minInclusive + 1))
+      minInclusive + Math.floor(this.next() * (maxInclusive - minInclusive + 1))
     );
   }
 
@@ -124,11 +123,8 @@ const dateKey = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
-const atTime = (
-  date: Date,
-  hour: number,
-  minute: number,
-): Date => new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute);
+const atTime = (date: Date, hour: number, minute: number): Date =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), hour, minute);
 
 const startOfDay = (date: Date): Date =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -156,7 +152,10 @@ const splitTaskDurationRandom = (
   rng: SeededRandom,
 ): number[] => {
   const minCount = Math.max(1, Math.ceil(totalMinutes / MAX_SPAN_MINUTES));
-  const maxCount = Math.max(minCount, Math.floor(totalMinutes / MIN_SPAN_MINUTES));
+  const maxCount = Math.max(
+    minCount,
+    Math.floor(totalMinutes / MIN_SPAN_MINUTES),
+  );
   const spanCount = rng.int(minCount, maxCount);
   const durations = Array.from({ length: spanCount }, () => MIN_SPAN_MINUTES);
   let remaining = totalMinutes - MIN_SPAN_MINUTES * spanCount;
@@ -203,7 +202,9 @@ const subtractBlockedWindow = (
     }
     if (blocked.end < segment.end) {
       nextSegments.push({
-        start: new Date(Math.max(segment.start.getTime(), blocked.end.getTime())),
+        start: new Date(
+          Math.max(segment.start.getTime(), blocked.end.getTime()),
+        ),
         end: segment.end,
       });
     }
@@ -232,9 +233,18 @@ const calculateAvailableWindows = (
         workWindow.startMinute,
       );
       const segmentStart = sameDate(currentDate, planningStart)
-        ? new Date(Math.max(workStart.getTime(), ceilToStepMinutes(planningStart, STEP_MINUTES).getTime()))
+        ? new Date(
+            Math.max(
+              workStart.getTime(),
+              ceilToStepMinutes(planningStart, STEP_MINUTES).getTime(),
+            ),
+          )
         : workStart;
-      const segmentEnd = atTime(currentDate, workWindow.endHour, workWindow.endMinute);
+      const segmentEnd = atTime(
+        currentDate,
+        workWindow.endHour,
+        workWindow.endMinute,
+      );
       if (segmentStart >= segmentEnd) {
         continue;
       }
@@ -249,7 +259,8 @@ const calculateAvailableWindows = (
       }
       windows.push(
         ...segments.filter(
-          (segment) => diffMinutes(segment.end, segment.start) >= MIN_SPAN_MINUTES,
+          (segment) =>
+            diffMinutes(segment.end, segment.start) >= MIN_SPAN_MINUTES,
         ),
       );
     }
@@ -330,13 +341,20 @@ const candidateSortKey = (
       const key = dateKey(item.startAt);
       dateMinutes.set(key, (dateMinutes.get(key) ?? 0) + item.duration);
     }
-    return [dateMinutes.get(dateKey(start)) ?? 0, start.getTime(), rng.next(), 0];
+    return [
+      dateMinutes.get(dateKey(start)) ?? 0,
+      start.getTime(),
+      rng.next(),
+      0,
+    ];
   }
   if (strategy === "compact") {
     if (placed.length === 0) {
       return [start.getTime(), rng.next(), 0, 0];
     }
-    const sameDayCount = placed.filter((item) => sameDate(item.startAt, start)).length;
+    const sameDayCount = placed.filter((item) =>
+      sameDate(item.startAt, start),
+    ).length;
     const nearestGap = Math.min(
       ...placed.map((item) =>
         item.endAt <= start
@@ -493,7 +511,9 @@ const validateSchedule = (
     const required = remainingTaskMinutes(task);
     const actual = scheduledMinutes.get(task.id) ?? 0;
     if (actual !== required) {
-      errors.push(`${task.title} total duration ${actual} must equal ${required}`);
+      errors.push(
+        `${task.title} total duration ${actual} must equal ${required}`,
+      );
     }
   }
 
@@ -523,7 +543,9 @@ const validateSchedule = (
     }
     const gap = diffMinutes(next.startAt, current.endAt);
     if (gap < GAP_MINUTES) {
-      errors.push(`${current.title} and ${next.title} must have a 15 minute gap`);
+      errors.push(
+        `${current.title} and ${next.title} must have a 15 minute gap`,
+      );
     }
   }
 
@@ -544,12 +566,19 @@ const scoreSchedule = (
     dailyMinutes.set(key, (dailyMinutes.get(key) ?? 0) + duration);
     const firstStart = dailyFirstStart.get(key);
     const lastEnd = dailyLastEnd.get(key);
-    dailyFirstStart.set(key, firstStart == null || start < firstStart ? start : firstStart);
+    dailyFirstStart.set(
+      key,
+      firstStart == null || start < firstStart ? start : firstStart,
+    );
     dailyLastEnd.set(key, lastEnd == null || end > lastEnd ? end : lastEnd);
   };
 
   for (const event of input.events) {
-    addDailyLoad(event.startAt, event.endAt, diffMinutes(event.endAt, event.startAt));
+    addDailyLoad(
+      event.startAt,
+      event.endAt,
+      diffMinutes(event.endAt, event.startAt),
+    );
   }
 
   let deadlinePressure = 0;
@@ -584,7 +613,8 @@ const scoreSchedule = (
 
   const maxDaily = Math.max(...values);
   const minDaily = Math.min(...values);
-  const averageDaily = values.reduce((sum, value) => sum + value, 0) / values.length;
+  const averageDaily =
+    values.reduce((sum, value) => sum + value, 0) / values.length;
   const balancePenalty = maxDaily - minDaily;
   const dailyVariancePenalty =
     values.reduce((sum, value) => sum + (value - averageDaily) ** 2, 0) /
@@ -704,7 +734,9 @@ export class RuleBasedGenerateScheduleDomainService
       return [];
     }
     const planningStart = schedulingStart;
-    const planningEnd = new Date(Math.max(...dates.map((date) => date.getTime())));
+    const planningEnd = new Date(
+      Math.max(...dates.map((date) => date.getTime())),
+    );
     const availableWindows = calculateAvailableWindows(
       input.events,
       planningStart,
@@ -716,7 +748,12 @@ export class RuleBasedGenerateScheduleDomainService
 
     for (let attempt = 0; attempt < this.#attempts; attempt += 1) {
       const strategy = rng.choice(STRATEGIES);
-      const result = buildRandomScheduleOnce(input, availableWindows, rng, strategy);
+      const result = buildRandomScheduleOnce(
+        input,
+        availableWindows,
+        rng,
+        strategy,
+      );
       if (result == null) {
         continue;
       }

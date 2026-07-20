@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { RuleBasedGenerateScheduleDomainService } from "./ruleBasedGenerateScheduleDomainService";
 import type {
   GenerateScheduleDomainServiceInput,
   GenerateScheduleResult,
 } from "./generateDomainService";
+import { RuleBasedGenerateScheduleDomainService } from "./ruleBasedGenerateScheduleDomainService";
 
 const minutes = (end: Date, start: Date): number =>
   (end.getTime() - start.getTime()) / 60_000;
@@ -22,7 +22,10 @@ const isWithinWorkWindow = (start: Date, end: Date): boolean => {
 
   return (
     start.toDateString() === end.toDateString() &&
-    windows.some(([windowStart, windowEnd]) => windowStart <= startMin && endMin <= windowEnd)
+    windows.some(
+      ([windowStart, windowEnd]) =>
+        windowStart <= startMin && endMin <= windowEnd,
+    )
   );
 };
 
@@ -43,7 +46,9 @@ const assertValidSchedule = (
     expect(duration).toBeGreaterThanOrEqual(30);
     expect(duration).toBeLessThanOrEqual(120);
     expect(isWithinWorkWindow(schedule.startAt, schedule.endAt)).toBe(true);
-    expect(schedule.endAt.getTime()).toBeLessThanOrEqual(task.deadline.getTime());
+    expect(schedule.endAt.getTime()).toBeLessThanOrEqual(
+      task.deadline.getTime(),
+    );
     totals.set(schedule.taskId, (totals.get(schedule.taskId) ?? 0) + duration);
   }
 
