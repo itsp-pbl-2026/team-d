@@ -5,4 +5,5 @@ export interface ScheduleRepository {
   findAll(): Promise<Schedule[]>;
   save(schedule: Schedule): Promise<void>;
   delete(id: ScheduleId): Promise<void>;
+  deleteAll(): Promise<void>;
 }

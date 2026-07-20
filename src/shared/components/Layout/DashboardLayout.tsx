@@ -11,6 +11,7 @@ import {
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import {
   CalendarIcon,
+  CheckSquare,
   HomeIcon,
   NotebookTabsIcon,
   ZapIcon,
@@ -19,6 +20,7 @@ import {
 const NAV_LINKS = [
   { icon: HomeIcon, label: "Home", to: "/" },
   { icon: CalendarIcon, label: "Calender", to: "/calender" },
+  { icon: CheckSquare, label: "Tasks", to: "/tasks" },
   { icon: NotebookTabsIcon, label: "Schedule", to: "/schedule" },
 ];
 
