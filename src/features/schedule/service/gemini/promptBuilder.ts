@@ -27,8 +27,16 @@ export const buildInitialPrompt = (
   tasks: TaskSpec[],
   freeSlots: FreeSlot[],
 ): string => {
+  // 1. 時刻を分かりやすい文字列として取得
+  const now = new Date();
+  const timeString = now.toLocaleString("ja-JP");
+
   return `あなたは優秀なスケジューリングAIです。以下のタスクを、与えられた空きスロットに配置してください。
 タスクの分解方法として、まず durationMin を「30〜120の整数の和」に分解してから、各断片を空きスロットに割り当てる進め方が有効です。
+
+ただし現在の日時は以下になる
+${timeString}
+この日時以降にスケジュールを割り振ってほしい
 
 タスク一覧:
 ${JSON.stringify(tasks, null, 2)}

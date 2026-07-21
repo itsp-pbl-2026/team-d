@@ -51,6 +51,7 @@ export type CheckId =
   | "H6"
   | "H7"
   | "H8"
+  | "H9"
   | "S1"
   | "S2";
 
