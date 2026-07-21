@@ -4,6 +4,7 @@ import {
   Group,
   LoadingOverlay,
   ScrollArea,
+  Select,
   Stack,
   Text,
 } from "@mantine/core";
@@ -17,7 +18,10 @@ import dayjs from "dayjs";
 import { Grid2X2PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { getSchedules } from "#/features/schedule/api/api";
-import { useGenerateSchedule } from "#/features/schedule/hooks/useGenerateSchedule";
+import {
+  useGenerateRuleBasedSchedule,
+  useGenerateSchedule,
+} from "#/features/schedule/hooks/useGenerateSchedule";
 import { useSchedulesForSchedule } from "#/features/schedule/hooks/useSchedulesForSchedule";
 import { getUpcomingEvents } from "#/features/upcomingEvent/api/api";
 import { useEventsForSchedule } from "#/features/upcomingEvent/hooks/useEventsForSchedule";
@@ -34,6 +38,13 @@ export const Route = createFileRoute("/schedule")({
 });
 
 const today = dayjs();
+const timeOptions = Array.from({ length: 25 }, (_, hour) => ({
+  value: String(hour),
+  label: `${String(hour).padStart(2, "0")}:00`,
+}));
+
+const formatScheduleTime = (hour: number): string =>
+  `${String(hour).padStart(2, "0")}:00:00`;
 
 function SchedulePage() {
   const { events, schedules } = Route.useLoaderData();
@@ -59,28 +70,87 @@ function SchedulePage() {
     [eventData, scheduleData],
   );
   const { generate, isGenerating } = useGenerateSchedule();
+  const { generate: generateRuleBased, isGenerating: isGeneratingRuleBased } =
+    useGenerateRuleBasedSchedule();
+  const isAnyGenerating = isGenerating || isGeneratingRuleBased;
 
   const [selectedDate, setSelectedDate] = useState<Date>(today.toDate());
   const [view, setView] = useState<ScheduleViewLevel>("week");
+  const [displayStartHour, setDisplayStartHour] = useState(0);
+  const [displayEndHour, setDisplayEndHour] = useState(24);
+  const displayStartTime = formatScheduleTime(displayStartHour);
+  const displayEndTime = formatScheduleTime(displayEndHour);
+  const displayStartOptions = timeOptions.filter(
+    (option) => Number(option.value) < displayEndHour,
+  );
+  const displayEndOptions = timeOptions.filter(
+    (option) => Number(option.value) > displayStartHour,
+  );
 
   return (
     <Stack gap="lg" h="100%">
-      <Group justify="right">
-        <Button
-          leftSection={<Grid2X2PlusIcon size={16} />}
-          color="indigo"
-          onClick={generate}
-          loading={isGenerating}
-          loaderProps={{
-            type: "dots",
-          }}
-        >
-          {schedules.length === 0 ? "Generate Schedule" : "Regenerate Schedule"}
-        </Button>
+      <Group justify="space-between">
+        <Group gap="xs">
+          <Select
+            label="Display start"
+            value={String(displayStartHour)}
+            onChange={(value) => {
+              if (value != null) {
+                setDisplayStartHour(Number(value));
+              }
+            }}
+            data={displayStartOptions}
+            allowDeselect={false}
+            size="xs"
+            w={120}
+          />
+          <Select
+            label="Display end"
+            value={String(displayEndHour)}
+            onChange={(value) => {
+              if (value != null) {
+                setDisplayEndHour(Number(value));
+              }
+            }}
+            data={displayEndOptions}
+            allowDeselect={false}
+            size="xs"
+            w={120}
+          />
+        </Group>
+        <Group>
+          <Button
+            leftSection={<Grid2X2PlusIcon size={16} />}
+            color="teal"
+            variant="outline"
+            onClick={generateRuleBased}
+            loading={isGeneratingRuleBased}
+            disabled={isGenerating}
+            loaderProps={{
+              type: "dots",
+            }}
+          >
+            Rule-based Generate
+          </Button>
+          <Button
+            leftSection={<Grid2X2PlusIcon size={16} />}
+            color="indigo"
+            onClick={generate}
+            loading={isGenerating}
+            disabled={isGeneratingRuleBased}
+            loaderProps={{
+              type: "dots",
+            }}
+          >
+            {schedules.length === 0
+              ? "Generate Schedule"
+              : "Regenerate Schedule"}
+          </Button>
+        </Group>
       </Group>
 
       <Box pos="relative">
-        <LoadingOverlay visible={isGenerating} />
+        <LoadingOverlay visible={isAnyGenerating} />
         <Schedule
           events={data}
           date={selectedDate}
@@ -92,12 +162,12 @@ function SchedulePage() {
           canDragEvent={(event) => event.payload?.isEditable === true}
           onEventDrop={onEventDrop}
           dayViewProps={{
-            startTime: "09:00:00",
-            endTime: "18:00:00",
+            startTime: displayStartTime,
+            endTime: displayEndTime,
           }}
           weekViewProps={{
-            startTime: "09:00:00",
-            endTime: "18:00:00",
+            startTime: displayStartTime,
+            endTime: displayEndTime,
           }}
           renderEventBody={(
             event: ScheduleEventData<{ description: string }>,
